@@ -16,7 +16,8 @@ public class SceneManager : MonoBehaviour
     [SerializeField] private int size;
     [SerializeField] private int xOffset;
     [SerializeField] private int yOffset;
-
+    [SerializeField] private ChessConfig  config;
+    
 
 
     [SerializeField] private string myMessage;
@@ -28,20 +29,23 @@ public class SceneManager : MonoBehaviour
     }
     private void CreateBoardUI()
     {
-        for (int i = 0; i < file; i++)
+        for (int rank = 0; rank < 8; rank++)
         {
-            for (int j = 0; j < rank; j++)
+            for (int file = 0; file < 8; file++)
             {
                 var obj = Instantiate(tile ,transform.localPosition,Quaternion.identity);
                 obj.transform.SetParent(panel);
                 obj.transform.localScale = Vector3.one;
-                obj.transform.localPosition=  new Vector3(xOffset+ j *size, yOffset + i*size );
-                obj.GetComponent<Image>().color = (i + j) % 2 == 0 ? Color.black : Color.white;
+                obj.transform.localPosition=  new Vector3(xOffset+ file *size, yOffset + rank*size );
+                obj.GetComponent<Image>().color = (file + rank) % 2 == 0 ? Color.grey : Color.white;
                 
             }
             
         }
     }
+    
+    
+    
     
     [ContextMenu("Basic Piece setup")]
     public void SetupDefaultPieces()
