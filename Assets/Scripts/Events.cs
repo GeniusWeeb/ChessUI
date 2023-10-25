@@ -3,7 +3,9 @@
 
     public static class Event
     {
-        public static  Action<string> IncomingData;
+        public static  Action<int[]> IncomingData;
        
 
     }
+
+ 

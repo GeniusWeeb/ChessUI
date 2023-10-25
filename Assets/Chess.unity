@@ -158,6 +158,11 @@ MonoBehaviour:
   xOffset: 50
   yOffset: 140
   size: 100
+  indexs:
+  - index: 26
+    pieceCode: 36
+  - index: 56
+    pieceCode: 40
 --- !u!4 &279750931
 Transform:
   m_ObjectHideFlags: 0

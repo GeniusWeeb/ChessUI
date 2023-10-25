@@ -24,16 +24,15 @@ public class ChessManager :MonoBehaviour
         { get; private set;
         }
         
-        private void MapData(string data , int index)
+        private void MapData(int data , int index)
         {
             // We will pass just the array  and then this should map
-            Debug.Log("Now checking for pieces");
+       
             foreach (var item in config.pieceList)
             {
                 var finalCode = item.code | item.color;
                 if (data.ToString() ==  finalCode.ToString())
                 {
-                    Debug.Log("Found it");
                     var p = Instantiate(piecePrefab,transform.position , Quaternion.identity ,parentTransform);
                    p.GetComponent<ChessPiece>().Init(item.piece_name ,item.piece_image);
                    p.GetComponent<Image>().sprite = item.piece_image;
@@ -47,16 +46,16 @@ public class ChessManager :MonoBehaviour
         {
             
             //Case 1: Spawn the ui there with the specific index 
-            Debug.Log("Mapping to cells");
+         
             // 64
             for (int rank = 0; rank < 8; rank++)
             {
                 for (int file = 0; file < 8; file++)
                 {
-                    Debug.Log( (8 * rank + file));
+                    
                     if (index != (8 * rank) + file)
                         continue;
-                    Debug.Log("Adding loacl postion");
+                   
                     p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size ); 
                     break;
                 }
@@ -67,12 +66,19 @@ public class ChessManager :MonoBehaviour
         
         //This function will receive the list of array and perform mapping
         //IMportant for mapping the default board
-        private void Map(string data)
+        private void Map(int[] data)
         {
-            
-            foreach (var item in indexs )
-            {
-                MapData(item.pieceCode.ToString(), item.index);
+            var  chessList = data;
+
+            // foreach (var item in indexs)
+            // {
+            //     
+            //     MapData(item.pieceCode,item.index);
+            // }
+
+            for (int i = 0; i < chessList.Length; i++)
+            {   
+                MapData(chessList[i], i);
             }
         }
 
@@ -92,11 +98,7 @@ public class ChessManager :MonoBehaviour
 
             }
 
-            void test()
-            {
-                Debug.Log("Succesffuly invoked");
-            }
-
+         
 
             private void OnDisable()
             {

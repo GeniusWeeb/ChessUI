@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using UnityEngine;
 using WebSocketSharp;
+using Newtonsoft.Json;
+
 
 public class Connection : MonoBehaviour
 {
@@ -56,12 +58,14 @@ public class Connection : MonoBehaviour
    private void  HandleWebSocketMessage(string message)
    {
        // Handle incoming WebSocket message in Unity
-       Debug.Log("Received: " + message);
-       
+      // Debug.Log("Received: " + message);
+
+      var data = JsonConvert.DeserializeObject<int[]>(message);
+      
        MainThreadDispatcher.EnQueue(
            () =>
            {
-               Event.IncomingData.Invoke(message);
+               Event.IncomingData.Invoke(data);
            });
        
       

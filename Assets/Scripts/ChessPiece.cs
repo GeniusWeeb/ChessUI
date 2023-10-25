@@ -8,12 +8,12 @@ using UnityEngine.UI;
 public class ChessPiece : MonoBehaviour , IDragHandler , IDropHandler , IPointerClickHandler
 {
 
-    [SerializeField] private string name;
+    [SerializeField] private string pName;
     [SerializeField] private Vector3 currentPosition;
     
     public void Init(string name , Sprite img)
     {
-        this.name = name;
+        this.pName = name;
     }
 
 
