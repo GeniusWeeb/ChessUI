@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,26 +9,36 @@ public class ChessPiece : MonoBehaviour , IDragHandler , IDropHandler , IPointer
 {
 
     [SerializeField] private string name;
-    [SerializeField] private string currentPosition;
+    [SerializeField] private Vector3 currentPosition;
     
     public void Init(string name , Sprite img)
     {
         this.name = name;
     }
+
+
+    private void OnEnable()
+    {
+        currentPosition = this.transform.position;
+    }
+
+
+    #region Pointer Events
     
-    public void OnDrag(PointerEventData eventData)
-    {
-        //select and move
-        
-    }
+        public void OnDrag(PointerEventData eventData)
+        {
+            //select and move
+            
+        }
 
-    public void OnDrop(PointerEventData eventData)
-    {
-       // Check if the object can be safely dropped here
-    }
+        public void OnDrop(PointerEventData eventData)
+        {
+           // Check if the object can be safely dropped here
+        }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        
-    }
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            
+        }
+    #endregion    
 }
