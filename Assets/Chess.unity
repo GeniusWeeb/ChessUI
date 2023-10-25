@@ -153,8 +153,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 11400000, guid: 0da1d49bbef9c45a38366476ba9086fe, type: 2}
-  parentTransform: {fileID: 1110299728}
+  parentTransform: {fileID: 1921739971}
   piecePrefab: {fileID: 7476754317990431395, guid: 4e0e202c3eaad456fba8e3e5ea698c02, type: 3}
+  xOffset: 50
+  yOffset: 140
+  size: 100
 --- !u!4 &279750931
 Transform:
   m_ObjectHideFlags: 0
@@ -610,6 +613,7 @@ MonoBehaviour:
   size: 100
   xOffset: 50
   yOffset: 140
+  config: {fileID: 11400000, guid: 0da1d49bbef9c45a38366476ba9086fe, type: 2}
   myMessage: ok
 --- !u!4 &1777155854
 Transform:
