@@ -9,8 +9,8 @@ public class Connection : MonoBehaviour
 {
 
 
-    public static Connection Instance;
-  
+    public static Connection Instance { get; private set; }
+
 
     private WebSocket ws;
     public WebSocket GetWebSocket => ws;

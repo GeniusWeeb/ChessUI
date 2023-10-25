@@ -1,6 +1,4 @@
-using System;
-using System.Threading;
-using TreeEditor;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +11,10 @@ public class ChessManager :MonoBehaviour
         [SerializeField] private GameObject piecePrefab;
         private ChessPiece cp;
         
-        
-        
-    
         public static ChessManager Instance
         { get; private set;
         }
         
-
         private void MapData(string data)
         {   
             
@@ -35,7 +29,7 @@ public class ChessManager :MonoBehaviour
                     var p = Instantiate(piecePrefab,transform.position , Quaternion.identity ,parentTransform);
                    p.GetComponent<ChessPiece>().Init(item.piece_name ,item.piece_image);
                    p.GetComponent<Image>().sprite = item.piece_image;
-                  p.transform.localPosition = Vector3.zero;
+                   p.transform.localPosition = Vector3.zero;
                    Debug.Log(p.name);
                    Debug.Log(item.color + "and " + item.code);
                 }
