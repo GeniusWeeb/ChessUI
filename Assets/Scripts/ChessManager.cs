@@ -1,4 +1,6 @@
 
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +14,9 @@ public class ChessManager :MonoBehaviour
         [SerializeField] private int  xOffset;
         [SerializeField] private int  yOffset;
         [SerializeField] private int  size;
+
+
+       [SerializeField] private List<PandIndex> indexs;
         
         private ChessPiece cp;
         
@@ -19,7 +24,7 @@ public class ChessManager :MonoBehaviour
         { get; private set;
         }
         
-        private void MapData(string data)
+        private void MapData(string data , int index)
         {
             // We will pass just the array  and then this should map
             Debug.Log("Now checking for pieces");
@@ -32,7 +37,7 @@ public class ChessManager :MonoBehaviour
                     var p = Instantiate(piecePrefab,transform.position , Quaternion.identity ,parentTransform);
                    p.GetComponent<ChessPiece>().Init(item.piece_name ,item.piece_image);
                    p.GetComponent<Image>().sprite = item.piece_image;
-                   MapDataToCell(p  ,37);
+                   MapDataToCell(p  ,index);
                 }
                
             }
@@ -52,12 +57,23 @@ public class ChessManager :MonoBehaviour
                     if (index != (8 * rank) + file)
                         continue;
                     Debug.Log("Adding loacl postion");
-                  
-                   
                     p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size ); 
+                    break;
                 }
             }
 
+        }
+    
+        
+        //This function will receive the list of array and perform mapping
+        //IMportant for mapping the default board
+        private void Map(string data)
+        {
+            
+            foreach (var item in indexs )
+            {
+                MapData(item.pieceCode.ToString(), item.index);
+            }
         }
 
 
@@ -72,7 +88,7 @@ public class ChessManager :MonoBehaviour
 
             private void OnEnable()
             {
-                Event.IncomingData += MapData;
+                Event.IncomingData +=Map;
 
             }
 
@@ -84,9 +100,16 @@ public class ChessManager :MonoBehaviour
 
             private void OnDisable()
             {
-                Event.IncomingData -= MapData;
+                Event.IncomingData -= Map;
             }
 
         #endregion
 
     }
+
+[Serializable]
+public class PandIndex
+{
+    public int index;
+    public int pieceCode;
+}
