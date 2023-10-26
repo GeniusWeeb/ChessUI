@@ -14,8 +14,11 @@ public class ChessManager :MonoBehaviour
         [SerializeField] private int  xOffset;
         [SerializeField] private int  yOffset;
         [SerializeField] private int  size;
+        
+        
+     
 
-
+        
        [SerializeField] private List<PandIndex> indexs;
         
         private ChessPiece cp;
@@ -38,6 +41,7 @@ public class ChessManager :MonoBehaviour
                             var p = Instantiate(piecePrefab,transform.position , Quaternion.identity ,parentTransform);
                            p.GetComponent<ChessPiece>().Init(item.piece_name ,item.piece_image);
                            p.GetComponent<Image>().sprite = item.piece_image;
+                           p.gameObject.name = item.piece_name;
                            MapDataToCell(p  ,index);
                         }
                        
@@ -71,12 +75,6 @@ public class ChessManager :MonoBehaviour
                 private void Map(int[] data)
                 {
                     var  chessList = data;
-                    // foreach (var item in indexs)
-                    // {
-                    //     
-                    //     MapData(item.pieceCode,item.index);
-                    // }
-
                     for (int i = 0; i < chessList.Length; i++)
                     {   
                         MapData(chessList[i], i);
@@ -116,3 +114,10 @@ public class PandIndex
     public int index;
     public int pieceCode;
 }
+
+public enum MoveTurn
+{
+    b, 
+    w
+}
+

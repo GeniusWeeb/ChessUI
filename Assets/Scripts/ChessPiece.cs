@@ -5,14 +5,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , IDragHandler , IPointerDownHandler 
+public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , IDragHandler  , IDropHandler , IPiece
 
 {
 
     [SerializeField] private string pName;
     [SerializeField] private Vector3 currentPosition;
     private string p = "ChessPiece";
-
+    [SerializeField] public ChessSquare currentSquare ;
+    
+    
     private RectTransform rect;
     private Image img;
 
@@ -57,14 +59,23 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
         rect.anchoredPosition += eventData.delta;
     }
     
-    
-    
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnDrop(PointerEventData eventData)
     {
+        Debug.Log(eventData.pointerDrag.name);
         
-    }
-    
-    #endregion
+        if (eventData.pointerDrag.GetComponent<IPiece>() != null)
+        { 
+            Captured(eventData.pointerDrag);
+        }
 
-   
+    }
+
+    public void Captured(GameObject newPiece)
+    {
+        this.gameObject.SetActive(false);
+        
+        currentSquare.SetNewPieceOnThis(newPiece);
+       
+    }
+    #endregion
 }
