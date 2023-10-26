@@ -10,6 +10,9 @@ using Image = UnityEngine.UI.Image;
 public class ChessManager :MonoBehaviour
     {
 
+        [SerializeField] private List<string> moveHistory;
+        
+
         [SerializeField] private ChessConfig config;
         [SerializeField] private Transform parentTransform;
         [SerializeField] private GameObject piecePrefab;
@@ -27,6 +30,10 @@ public class ChessManager :MonoBehaviour
         [Header("Turn to Move")] 
         [SerializeField]
         private  MoveTurn turn;
+        
+        
+
+        [SerializeField] private int[] internalBoard = new int[64];
 
     
         
@@ -44,6 +51,20 @@ public class ChessManager :MonoBehaviour
             //Come From Engine as well
             moveCounter += 1;
             moveCounterTxt.text = moveCounter.ToString();
+        }
+
+        
+        //REQUIRES MOVE PROTOCOL
+        public void SendMoveMadeToEngine(string pieceName , string squareName)
+        {
+            string move = pieceName + "-" + squareName;
+            moveHistory.Add(move);
+            var moveData = new DataProtocol.Move(move , DataSendTypes.MOVE.ToString() );
+            
+            Connection.Instance.SendMessage(moveData);
+            Debug.Log(move);
+          
+            
         }
 
         #region  Mapping daa to cells
@@ -68,7 +89,6 @@ public class ChessManager :MonoBehaviour
                 //Entry
                 private void MapDataToCell( GameObject p ,int index)
                 {
-                    
                     //Case 1: Spawn the ui there with the specific index 
                  
                     // 64
@@ -79,23 +99,25 @@ public class ChessManager :MonoBehaviour
                             
                             if (index != (8 * rank) + file)
                                 continue;
-                           
+                            
+                            //Align with all the relevant squares
                             p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size ); 
                             break;
                         }
                     }
 
                 }
-            
                 
                 //This function will receive the list of array and perform mapping
                 //IMportant for mapping the default board
                 private void Map(int[] data)
                 {
-                    var  chessList = data;
-                    for (int i = 0; i < chessList.Length; i++)
+                    internalBoard = data;
+                    for (int i = 0; i < internalBoard.Length; i++)
                     {   
-                        MapData(chessList[i], i);
+                        
+                        //Sending the piece data and the the square at which the piece is 
+                        MapData(internalBoard[i], i);
                     }
                 }
 
@@ -141,4 +163,6 @@ public enum MoveTurn
     WhiteToMove, 
     BlackToMove, 
 }
+
+
 

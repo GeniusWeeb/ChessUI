@@ -68,7 +68,15 @@ public class Connection : MonoBehaviour
                Event.IncomingData.Invoke(data);
            });
    }
-   
+
+
+   public void SendMessage<T>(T data )
+   {
+       var toSend = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+       Debug.Log(toSend);
+       ws.Send(toSend);
+   }
+
    private void OnDestroy()
    {
        ws.Close();
