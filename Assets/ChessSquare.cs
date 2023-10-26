@@ -6,6 +6,7 @@ public class ChessSquare : MonoBehaviour, IDropHandler
 {
 
     public ChessPiece currentP;
+    public bool captured; 
     public void OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag != null  )
@@ -27,7 +28,10 @@ public class ChessSquare : MonoBehaviour, IDropHandler
         currentP.GetComponent<RectTransform>().anchoredPosition = 
             this.GetComponent<RectTransform>().anchoredPosition;
         currentP.currentSquare = this.gameObject.GetComponent<ChessSquare>();
-        ConfirMoveMade(currentP.name , this.gameObject.name);
+        currentP.SetOldPosition(currentP.GetCurrentPosition);
+        currentP.SetCurrentPosition(this.gameObject.name);
+        string moveHistory = currentP.GetOldPosition + currentP.GetCurrentPosition;
+        ConfirMoveMade(currentP.name , moveHistory);
     }
 
     private void ConfirMoveMade(string name , string moveSquare)

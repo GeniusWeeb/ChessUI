@@ -7,7 +7,9 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
 {
 
     [SerializeField] private string pName;
-    [SerializeField] private Vector3 currentPosition;
+    [SerializeField] private string currentPosition;
+    [SerializeField] private string previousPosition;
+    
     private string p = "ChessPiece";
     [SerializeField] public ChessSquare currentSquare ;
     
@@ -15,6 +17,9 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     private RectTransform rect;
     private Image img;
 
+
+    public string GetCurrentPosition => currentPosition;
+    public string GetOldPosition => previousPosition;
     
     #region UnityMethods
         private void Awake()
@@ -29,19 +34,14 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
             this.pName = name;
         }
         
-        private void OnEnable()
-        {
-            currentPosition = this.transform.position;
-        }
+    
     #endregion   
     
     #region Pointer Events
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-       
         img.raycastTarget = false;
-     
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -65,6 +65,17 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
         { 
             Captured(eventData.pointerDrag);
         }
+
+    }
+
+    public void SetCurrentPosition(string value)
+    {
+        currentPosition = value;
+    }
+
+    public void SetOldPosition(string value)
+    {
+        previousPosition = value;
 
     }
 

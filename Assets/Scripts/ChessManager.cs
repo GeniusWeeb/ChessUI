@@ -9,7 +9,7 @@ using Image = UnityEngine.UI.Image;
 
 public class ChessManager :MonoBehaviour
     {
-
+    
         [SerializeField] private List<string> moveHistory;
         
 
@@ -34,8 +34,7 @@ public class ChessManager :MonoBehaviour
         
 
         [SerializeField] private int[] internalBoard = new int[64];
-
-    
+        
         
         //Force this info to come from the engin and when you decipher the FEN mapper
        [SerializeField] private TextMeshProUGUI moveCounterTxt;
@@ -59,12 +58,21 @@ public class ChessManager :MonoBehaviour
         {
             string move = pieceName + "-" + squareName;
             moveHistory.Add(move);
-            var moveData = new DataProtocol.Move(move , DataSendTypes.MOVE.ToString() );
+            var moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move );
             
             Connection.Instance.SendMessage(moveData);
             Debug.Log(move);
           
             
+        }
+
+        public void Undo1StepAtaTime()
+        {
+            if (moveHistory.Count > 0)
+            {
+               
+            }
+
         }
 
         #region  Mapping daa to cells
@@ -101,13 +109,33 @@ public class ChessManager :MonoBehaviour
                                 continue;
                             
                             //Align with all the relevant squares
-                            p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size ); 
+                            p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size );
+                           p.GetComponent<ChessPiece>().SetCurrentPosition(AssignCellNotation(file, rank));
+                            
                             break;
                         }
                     }
 
                 }
-                
+
+
+                private string AssignCellNotation(int file, int rank)
+                {
+                    string square = null ; 
+                    return  square= file switch
+                    {
+                        0 => "a" + (rank + 1),
+                        1 => "b" + (rank + 1),
+                        2 => "c" + (rank + 1),
+                        3 => "d" + (rank + 1),
+                        4 => "e" + (rank + 1),
+                        5 => "f" + (rank + 1),
+                        6 => "g" + (rank + 1),
+                        7 => "h" + (rank + 1),
+                        _ => square 
+                    };
+                }
+
                 //This function will receive the list of array and perform mapping
                 //IMportant for mapping the default board
                 private void Map(int[] data)

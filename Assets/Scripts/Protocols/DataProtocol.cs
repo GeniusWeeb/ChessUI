@@ -1,26 +1,33 @@
- public class DataProtocol
-    {
+ public class DataProtocol :IPCMessage
+ {
+     public string msgType { get; set; }
+     public string data { get; set;
+     }
 
-        public class Move
+     public DataProtocol(string msgType ,string data)
         {
-            public string moveType { get;  set; }
-            public string moveName { get;  set; }
+            this.msgType = msgType;
+            this.data = data;
 
-            public Move(string name ,string moveType)
-            {
-                this.moveName = name;
-                this.moveType = moveType;
-            }
         }
-
     }
 
-
-
- public enum DataSendTypes
+ public abstract class IPCMessage
  {
-     MOVE 
+     public string msgType { get; set; }
+     public string data {get; set;
+     }
+ }
+
+
+
+
+ public enum ProtocolTypes
+ {
+     MOVE, BOARDSTATE , GAMESTART , GAMEEND
  }
  
  
  
+ 
+ //FROM GAME STATE YOU CAN RETRIEVE LOT OF INFO
