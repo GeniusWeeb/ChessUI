@@ -6,10 +6,13 @@ public class ChessSquare : MonoBehaviour, IDropHandler
 {
 
     public ChessPiece currentP;
+    public bool captured; 
     public void OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag != null  )
         {   
+            
+           //VALIDATION NEEDED!   //IF MOVE NOT ALLOWED -> RETURN -> GUARD CLAUSE 
             //Force the pieces previous square to be empty now that it is here
             if (eventData.pointerDrag.GetComponent<ChessPiece>().currentSquare != null) {
                 eventData.pointerDrag.GetComponent<ChessPiece>().currentSquare.GetComponent<ChessSquare>().currentP = null;
@@ -25,12 +28,15 @@ public class ChessSquare : MonoBehaviour, IDropHandler
         currentP.GetComponent<RectTransform>().anchoredPosition = 
             this.GetComponent<RectTransform>().anchoredPosition;
         currentP.currentSquare = this.gameObject.GetComponent<ChessSquare>();
-        ShowAndPerformNotation(currentP.name , this.gameObject.name);
+        currentP.SetOldPosition(currentP.GetCurrentPosition);
+        currentP.SetCurrentPosition(this.gameObject.name);
+        string moveHistory = currentP.GetOldPosition + currentP.GetCurrentPosition;
+        ConfirMoveMade(currentP.name , moveHistory);
     }
 
-    private void ShowAndPerformNotation(string name , string moveSquare)
+    private void ConfirMoveMade(string name , string moveSquare)
     {
-        Debug.Log(name+""+ moveSquare);
+        ChessManager.Instance.SendMoveMadeToEngine(name ,moveSquare);
         Event.MoveMade.Invoke();
     }
 

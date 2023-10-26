@@ -9,6 +9,9 @@ using Image = UnityEngine.UI.Image;
 
 public class ChessManager :MonoBehaviour
     {
+    
+        [SerializeField] private List<string> moveHistory;
+        
 
         [SerializeField] private ChessConfig config;
         [SerializeField] private Transform parentTransform;
@@ -27,8 +30,11 @@ public class ChessManager :MonoBehaviour
         [Header("Turn to Move")] 
         [SerializeField]
         private  MoveTurn turn;
+        
+        
 
-    
+        [SerializeField] private int[] internalBoard = new int[64];
+        
         
         //Force this info to come from the engin and when you decipher the FEN mapper
        [SerializeField] private TextMeshProUGUI moveCounterTxt;
@@ -44,6 +50,29 @@ public class ChessManager :MonoBehaviour
             //Come From Engine as well
             moveCounter += 1;
             moveCounterTxt.text = moveCounter.ToString();
+        }
+
+        
+        //REQUIRES MOVE PROTOCOL
+        public void SendMoveMadeToEngine(string pieceName , string squareName)
+        {
+            string move = pieceName + "-" + squareName;
+            moveHistory.Add(move);
+            var moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move );
+            
+            Connection.Instance.SendMessage(moveData);
+            Debug.Log(move);
+          
+            
+        }
+
+        public void Undo1StepAtaTime()
+        {
+            if (moveHistory.Count > 0)
+            {
+               
+            }
+
         }
 
         #region  Mapping daa to cells
@@ -68,7 +97,6 @@ public class ChessManager :MonoBehaviour
                 //Entry
                 private void MapDataToCell( GameObject p ,int index)
                 {
-                    
                     //Case 1: Spawn the ui there with the specific index 
                  
                     // 64
@@ -79,23 +107,45 @@ public class ChessManager :MonoBehaviour
                             
                             if (index != (8 * rank) + file)
                                 continue;
-                           
-                            p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size ); 
+                            
+                            //Align with all the relevant squares
+                            p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size );
+                           p.GetComponent<ChessPiece>().SetCurrentPosition(AssignCellNotation(file, rank));
+                            
                             break;
                         }
                     }
 
                 }
-            
-                
+
+
+                private string AssignCellNotation(int file, int rank)
+                {
+                    string square = null ; 
+                    return  square= file switch
+                    {
+                        0 => "a" + (rank + 1),
+                        1 => "b" + (rank + 1),
+                        2 => "c" + (rank + 1),
+                        3 => "d" + (rank + 1),
+                        4 => "e" + (rank + 1),
+                        5 => "f" + (rank + 1),
+                        6 => "g" + (rank + 1),
+                        7 => "h" + (rank + 1),
+                        _ => square 
+                    };
+                }
+
                 //This function will receive the list of array and perform mapping
                 //IMportant for mapping the default board
                 private void Map(int[] data)
                 {
-                    var  chessList = data;
-                    for (int i = 0; i < chessList.Length; i++)
+                    internalBoard = data;
+                    for (int i = 0; i < internalBoard.Length; i++)
                     {   
-                        MapData(chessList[i], i);
+                        
+                        //Sending the piece data and the the square at which the piece is 
+                        MapData(internalBoard[i], i);
                     }
                 }
 
@@ -141,4 +191,6 @@ public enum MoveTurn
     WhiteToMove, 
     BlackToMove, 
 }
+
+
 
