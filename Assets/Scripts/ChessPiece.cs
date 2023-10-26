@@ -12,6 +12,7 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     
     private string p = "ChessPiece";
     [SerializeField] public ChessSquare currentSquare ;
+    [SerializeField] public ChessSquare previousSquare ;
     
     
     private RectTransform rect;

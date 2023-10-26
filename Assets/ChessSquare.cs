@@ -27,6 +27,8 @@ public class ChessSquare : MonoBehaviour, IDropHandler
         currentP = p.GetComponent<ChessPiece>();
         currentP.GetComponent<RectTransform>().anchoredPosition = 
             this.GetComponent<RectTransform>().anchoredPosition;
+
+        currentP.previousSquare = currentP.currentSquare;
         currentP.currentSquare = this.gameObject.GetComponent<ChessSquare>();
         currentP.SetOldPosition(currentP.GetCurrentPosition);
         currentP.SetCurrentPosition(this.gameObject.name);
