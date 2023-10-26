@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -18,25 +15,26 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     private RectTransform rect;
     private Image img;
 
-    private void Awake()
-    {
-        rect = GetComponent<RectTransform>();
-        img = GetComponent<Image>();
+    
+    #region UnityMethods
+        private void Awake()
+        {
+            rect = GetComponent<RectTransform>();
+            img = GetComponent<Image>();
 
-    }
+        }
 
-    public void Init(string name , Sprite img)
-    {
-        this.pName = name;
-    }
-
-
-    private void OnEnable()
-    {
-        currentPosition = this.transform.position;
-    }
-
-
+        public void Init(string name , Sprite img)
+        {
+            this.pName = name;
+        }
+        
+        private void OnEnable()
+        {
+            currentPosition = this.transform.position;
+        }
+    #endregion   
+    
     #region Pointer Events
 
     public void OnBeginDrag(PointerEventData eventData)

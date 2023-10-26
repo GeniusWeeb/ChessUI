@@ -56,22 +56,6 @@ public class SceneManager : MonoBehaviour
         }
     }
     
-    
-    
-    
-    [ContextMenu("Basic Piece setup")]
-    public void SetupDefaultPieces()
-    {
-        //PPPPPPPP
-        //RNBQKBNR
-        
-        
-        // This default will come from the Engine
-        //We should have marked way to identify which is what here
-        //Later based on FEN we should update the board state 
-        
-    }
-
 
     [ContextMenu("Send a message to my bitch console")]
     public void SendMessage()

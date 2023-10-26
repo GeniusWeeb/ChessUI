@@ -67,12 +67,8 @@ public class Connection : MonoBehaviour
            {
                Event.IncomingData.Invoke(data);
            });
-       
-      
    }
-
- 
-
+   
    private void OnDestroy()
    {
        ws.Close();

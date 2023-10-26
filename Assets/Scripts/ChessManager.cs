@@ -1,8 +1,10 @@
 
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 
 public class ChessManager :MonoBehaviour
@@ -15,19 +17,35 @@ public class ChessManager :MonoBehaviour
         [SerializeField] private int  yOffset;
         [SerializeField] private int  size;
         
+        [Header("For testing positions")]
+        [SerializeField] private List<PandIndex> indexs;
         
-     
+        
+        [Header("Move Counter")]
+        [SerializeField] private int moveCounter ;
 
+        [Header("Turn to Move")] 
+        [SerializeField]
+        private  MoveTurn turn;
+
+    
         
-       [SerializeField] private List<PandIndex> indexs;
+        //Force this info to come from the engin and when you decipher the FEN mapper
+       [SerializeField] private TextMeshProUGUI moveCounterTxt;
+       [SerializeField] private TextMeshProUGUI moveTurnTxt;
         
         private ChessPiece cp;
-        
         public static ChessManager Instance
         { get; private set;
         }
         
-        
+        private void MoveMade()
+        {
+            //Come From Engine as well
+            moveCounter += 1;
+            moveCounterTxt.text = moveCounter.ToString();
+        }
+
         #region  Mapping daa to cells
                 private void MapData(int data , int index)
                 {
@@ -94,6 +112,7 @@ public class ChessManager :MonoBehaviour
             private void OnEnable()
             {
                 Event.IncomingData +=Map;
+                Event.MoveMade += MoveMade;
 
             }
 
@@ -102,6 +121,7 @@ public class ChessManager :MonoBehaviour
             private void OnDisable()
             {
                 Event.IncomingData -= Map;
+                Event.MoveMade -= MoveMade;
             }
 
         #endregion
@@ -109,7 +129,7 @@ public class ChessManager :MonoBehaviour
     }
 
 [Serializable]
-public class PandIndex
+public class PandIndex      
 {
     public int index;
     public int pieceCode;
@@ -117,7 +137,8 @@ public class PandIndex
 
 public enum MoveTurn
 {
-    b, 
-    w
+    //DOING BITWISE AND WITH THE PIECE CODE WE CAN FIND OUT WHO IS BLACK AND WHITE
+    WhiteToMove, 
+    BlackToMove, 
 }
 

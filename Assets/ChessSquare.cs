@@ -31,8 +31,7 @@ public class ChessSquare : MonoBehaviour, IDropHandler
     private void ShowAndPerformNotation(string name , string moveSquare)
     {
         Debug.Log(name+""+ moveSquare);
-        
-        
+        Event.MoveMade.Invoke();
     }
 
 }
