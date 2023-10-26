@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5765117469268648570}
   - component: {fileID: 4055968358598989801}
   - component: {fileID: 5486982920369565161}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Piece
-  m_TagString: Untagged
+  m_TagString: ChessPiece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

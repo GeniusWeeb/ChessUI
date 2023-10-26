@@ -38,7 +38,19 @@ public class SceneManager : MonoBehaviour
                 obj.transform.localScale = Vector3.one;
                 obj.transform.localPosition=  new Vector3(xOffset+ file *size, yOffset + rank*size );
                 obj.GetComponent<Image>().color = (file + rank) % 2 == 0 ? Color.grey : Color.white;
-                
+
+                obj.name = file switch
+                {
+                    0 => "a" + (rank + 1),
+                    1 => "b" + (rank + 1),
+                    2 => "c" + (rank + 1),
+                    3 => "d" + (rank + 1),
+                    4 => "e" + (rank + 1),
+                    5 => "f" + (rank + 1),
+                    6 => "g" + (rank + 1),
+                    7 => "h" + (rank + 1),
+                    _ => obj.name
+                };
             }
             
         }

@@ -5,12 +5,24 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ChessPiece : MonoBehaviour , IDragHandler , IDropHandler , IPointerClickHandler
+public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , IDragHandler , IPointerDownHandler 
+
 {
 
     [SerializeField] private string pName;
     [SerializeField] private Vector3 currentPosition;
-    
+    private string p = "ChessPiece";
+
+    private RectTransform rect;
+    private Image img;
+
+    private void Awake()
+    {
+        rect = GetComponent<RectTransform>();
+        img = GetComponent<Image>();
+
+    }
+
     public void Init(string name , Sprite img)
     {
         this.pName = name;
@@ -24,21 +36,35 @@ public class ChessPiece : MonoBehaviour , IDragHandler , IDropHandler , IPointer
 
 
     #region Pointer Events
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+       
+        img.raycastTarget = false;
+     
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+       // Debug.Log(eventData.pointerEnter.name);
+        
+        img.raycastTarget = true;
+      
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        rect.anchoredPosition += eventData.delta;
+    }
     
-        public void OnDrag(PointerEventData eventData)
-        {
-            //select and move
-            
-        }
+    
+    
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        
+    }
+    
+    #endregion
 
-        public void OnDrop(PointerEventData eventData)
-        {
-           // Check if the object can be safely dropped here
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            
-        }
-    #endregion    
+   
 }
