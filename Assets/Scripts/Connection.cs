@@ -55,24 +55,35 @@ public class Connection : MonoBehaviour
        Debug.Log("Connected to console");
    }
    
-   private void  HandleWebSocketMessage(string message)
-   {
-       // Handle incoming WebSocket message in Unity
-      // Debug.Log("Received: " + message);
-
-      var data = JsonConvert.DeserializeObject<int[]>(message);
+   private void  HandleWebSocketMessage(string data)
+   {  
+       Debug.Log("<color=red> Received Data </color>" + data);
+      DataProtocol incomingData = JsonConvert.DeserializeObject<DataProtocol>(data);
+      if (incomingData.msgType == ProtocolTypes.GAMESTART.ToString()) {
+          var board = JsonConvert.DeserializeObject<int[]>(incomingData.data);
+          MainThreadDispatcher.EnQueue(
+              () =>
+              { 
+                  Event<int[]>.GameEvent.Invoke(board);
+              });
+          
+      }
       
-       MainThreadDispatcher.EnQueue(
-           () =>
-           {
-               Event.IncomingData.Invoke(data);
-           });
+      else if (incomingData.msgType == ProtocolTypes.VALIDATE.ToString())
+      { 
+          bool canMakeMove = JsonConvert.DeserializeObject<bool>(incomingData.data);
+          MainThreadDispatcher.EnQueue(
+              () =>
+              {
+                    Event<bool>.GameEvent.Invoke(canMakeMove);
+              });
+      }
    }
 
 
    public void SendMessage<T>(T data )
    {
-       var toSend = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+       var toSend =JsonConvert.SerializeObject(data);
        Debug.Log(toSend);
        ws.Send(toSend);
    }
