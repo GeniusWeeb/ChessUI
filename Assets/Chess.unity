@@ -303,6 +303,9 @@ MonoBehaviour:
   internalBoard: 
   moveCounterTxt: {fileID: 1331920021}
   moveTurnTxt: {fileID: 160456822}
+  pieceThatMadeMove: {fileID: 0}
+  squareThatPieceMovedTo: {fileID: 0}
+  chessBoardHolder: {fileID: 1921739971}
 --- !u!4 &279750931
 Transform:
   m_ObjectHideFlags: 0
@@ -1853,10 +1856,10 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 997061192}
+  - {fileID: 279750931}
   - {fileID: 1241478329}
   - {fileID: 1110299728}
   - {fileID: 1264762103}
   - {fileID: 1809093721}
   - {fileID: 1777155854}
-  - {fileID: 279750931}
   - {fileID: 1074842102}
