@@ -11,16 +11,24 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     [SerializeField] private string previousPosition;
     
     private string p = "ChessPiece";
-    [SerializeField] public ChessSquare currentSquare ;
+    //CEllS TRACKER
+    [SerializeField] public ChessSquare currentSquare ; 
     [SerializeField] public ChessSquare previousSquare ;
+    
+    //SNAP POSITION TRACKERS
+    public Vector2 currentRectTransform ;
+    public Vector2 oldRectTransform ;
     
     
     private RectTransform rect;
     private Image img;
 
-
     public string GetCurrentPosition => currentPosition;
     public string GetOldPosition => previousPosition;
+    
+    
+    
+    
     
     #region UnityMethods
         private void Awake()
@@ -33,6 +41,11 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
         public void Init(string name , Sprite img)
         {
             this.pName = name;
+        }
+
+        public ChessPiece()
+        {
+            
         }
         
     
@@ -84,7 +97,10 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     {
         this.gameObject.SetActive(false);
         
-        currentSquare.SetNewPieceOnThis(newPiece);
+        //CAPTURE MECHANIC PENDING
+            
+        //currentSquare.SetNewPieceOnThis(newPiece);
+        ChessManager.Instance.SetNewPieceOnThis(newPiece ,currentSquare.gameObject);
        
     }
     #endregion

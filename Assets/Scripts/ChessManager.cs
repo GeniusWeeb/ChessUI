@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -12,7 +13,6 @@ public class ChessManager :MonoBehaviour
     
         [SerializeField] private List<string> moveHistory;
         
-
         [SerializeField] private ChessConfig config;
         [SerializeField] private Transform parentTransform;
         [SerializeField] private GameObject piecePrefab;
@@ -30,17 +30,17 @@ public class ChessManager :MonoBehaviour
         [Header("Turn to Move")] 
         [SerializeField]
         private  MoveTurn turn;
-        
-        
-
         [SerializeField] private int[] internalBoard = new int[64];
-        
-        
         //Force this info to come from the engin and when you decipher the FEN mapper
        [SerializeField] private TextMeshProUGUI moveCounterTxt;
        [SerializeField] private TextMeshProUGUI moveTurnTxt;
+       private ChessPiece cp;
+
+       [SerializeField] private GameObject pieceThatMadeMove;
+       [SerializeField] private GameObject squareThatPieceMovedTo;
+       
+       
         
-        private ChessPiece cp;
         public static ChessManager Instance
         { get; private set;
         }
@@ -56,24 +56,62 @@ public class ChessManager :MonoBehaviour
         //REQUIRES MOVE PROTOCOL
         public void SendMoveMadeToEngine(string pieceName , string squareName)
         {
+            bool canMakeMove = false;
             string move = pieceName + "-" + squareName;
             moveHistory.Add(move);
-            var moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move );
-            
+            DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move );
             Connection.Instance.SendMessage(moveData);
-            Debug.Log(move);
-          
-            
+            Debug.Log( $"<color=red> {move} </color>");
         }
-
-        public void Undo1StepAtaTime()
+   
+        private void ValidationResult( bool canMove)
         {
-            if (moveHistory.Count > 0)
-            {
-               
+
+            if (canMove)
+            {   
+                Debug.Log("Move can take place");
+                PerformMoveFinal();
             }
+            else
+            {
+                Debug.Log("Move cant take place");
+                ResetPiecePosition();
+            }
+        }
+
+        private void ResetPiecePosition()
+        {
+            pieceThatMadeMove.GetComponent<RectTransform>().anchoredPosition =
+                pieceThatMadeMove.GetComponent<ChessPiece>().currentRectTransform;
+            pieceThatMadeMove = null;
+            squareThatPieceMovedTo = null;
+        }
+
+        //Just set temporary
+        public void SetNewPieceOnThis(GameObject p , GameObject newSquare)
+        {
+            pieceThatMadeMove = p;
+            squareThatPieceMovedTo = newSquare;
+        }
+        private void PerformMoveFinal()
+        {
+            GameObject p = pieceThatMadeMove;
+            GameObject newSquare = squareThatPieceMovedTo;
+            // IF MOVE IS NOT CORRECT , SNAP IT BACK TO OLD POSITION AND JUST RETURN
+            //CONFIRMATION THAT THE MOVE IS SUCCESSFUL
+            ChessPiece  currentP = newSquare.GetComponent<ChessSquare>().currentP;
+            currentP = p.GetComponent<ChessPiece>();
+            //UPDATE TRANSFORMS ONCE MOVE HAS BEE MADE
+            currentP.oldRectTransform = currentP.currentRectTransform;
+            currentP.currentRectTransform = newSquare.GetComponent<RectTransform>().anchoredPosition;
+            currentP.previousSquare = currentP.currentSquare;
+            currentP.currentSquare = newSquare.gameObject.GetComponent<ChessSquare>();
+            currentP.SetOldPosition(currentP.GetCurrentPosition);
+            currentP.SetCurrentPosition(newSquare.gameObject.name);
 
         }
+
+
 
         #region  Mapping daa to cells
                 private void MapData(int data , int index)
@@ -107,11 +145,11 @@ public class ChessManager :MonoBehaviour
                             
                             if (index != (8 * rank) + file)
                                 continue;
-                            
+                            ChessPiece piece = p.GetComponent<ChessPiece>();
                             //Align with all the relevant squares
                             p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size );
-                           p.GetComponent<ChessPiece>().SetCurrentPosition(AssignCellNotation(file, rank));
-                            
+                            piece.SetCurrentPosition(AssignCellNotation(file, rank));
+                            piece.currentRectTransform = piece. GetComponent<RectTransform>().anchoredPosition;
                             break;
                         }
                     }
@@ -152,29 +190,31 @@ public class ChessManager :MonoBehaviour
         #endregion
 
         #region Unity methods
-        
-            private void Awake()
+
+        private void Start()
+        {
+            Event<int[]>.GameEvent +=Map;
+            Event<bool>.GameEvent += ValidationResult;
+            Event.MoveMade += MoveMade;
+        }
+
+        private void Awake()
             {
                 Instance = this;
-               
             }
-
-            private void OnEnable()
-            {
-                Event.IncomingData +=Map;
-                Event.MoveMade += MoveMade;
-
-            }
-
+        
          
 
             private void OnDisable()
             {
-                Event.IncomingData -= Map;
+                Event<int[]>.GameEvent -= Map;
+                Event<bool>.GameEvent -= ValidationResult;
                 Event.MoveMade -= MoveMade;
             }
 
-        #endregion
+          
+
+            #endregion
 
     }
 
