@@ -10,35 +10,44 @@ using Image = UnityEngine.UI.Image;
 
 public class ChessManager :MonoBehaviour
     {
-    
-        [SerializeField] private List<string> moveHistory;
-        
-        [SerializeField] private ChessConfig config;
-        [SerializeField] private Transform parentTransform;
-        [SerializeField] private GameObject piecePrefab;
-        [SerializeField] private int  xOffset;
-        [SerializeField] private int  yOffset;
-        [SerializeField] private int  size;
-        
-        [Header("For testing positions")]
-        [SerializeField] private List<PandIndex> indexs;
-        
-        
-        [Header("Move Counter")]
-        [SerializeField] private int moveCounter ;
+        #region Variables
+                
+            [SerializeField] private List<string> moveHistory;
+            
+            [SerializeField] private List<MoveTracker> trackMove;
+            
+            [SerializeField] private ChessConfig config;
+            [SerializeField] private Transform parentTransform;
+            [SerializeField] private GameObject piecePrefab;
+            [SerializeField] private int  xOffset;
+            [SerializeField] private int  yOffset;
+            [SerializeField] private int  size;
+            
+            [Header("For testing positions")]
+            [SerializeField] private List<PandIndex> indexs;
+            
+            [Header("Move Counter")]
+            [SerializeField] private int moveCounter ;
 
-        [Header("Turn to Move")] 
-        [SerializeField]
-        private  MoveTurn turn;
-        [SerializeField] private int[] internalBoard = new int[64];
-        //Force this info to come from the engin and when you decipher the FEN mapper
-       [SerializeField] private TextMeshProUGUI moveCounterTxt;
-       [SerializeField] private TextMeshProUGUI moveTurnTxt;
-       private ChessPiece cp;
+            [Header("Turn to Move")] 
+            [SerializeField]
+            private  MoveTurn turn;
+            [SerializeField] private int[] internalBoard = new int[64];
+            //Force this info to come from the engin and when you decipher the FEN mapper
+           [SerializeField] private TextMeshProUGUI moveCounterTxt;
+           [SerializeField] private TextMeshProUGUI moveTurnTxt;
+           private ChessPiece cp;
 
-       [SerializeField] private GameObject pieceThatMadeMove;
-       [SerializeField] private GameObject squareThatPieceMovedTo;
+           [SerializeField] private GameObject pieceThatMadeMove;
+           [SerializeField] private GameObject squareThatPieceMovedTo;
+           
+           
+           [Header("Chessboard and Piece holders")] [SerializeField]
+           private Transform chessBoardHolder;
+
+           
        
+       #endregion
        
         
         public static ChessManager Instance
@@ -108,9 +117,36 @@ public class ChessManager :MonoBehaviour
             currentP.currentSquare = newSquare.gameObject.GetComponent<ChessSquare>();
             currentP.SetOldPosition(currentP.GetCurrentPosition);
             currentP.SetCurrentPosition(newSquare.gameObject.name);
+            
+            
+            trackMove.Add( new MoveTracker( currentP,currentP.previousSquare ,currentP.currentSquare));
+            MoveMade();
 
         }
 
+        public void UndoMove()
+        {
+            #region UI BASED UNDO -> SEND THE BOARD STATE TO THE ENGINE
+                    if (trackMove.Count == 0) //Empty array return
+                        return;
+                    //Most recent move , right now we are only doing  1 move at a time.
+                    //next step -> based on length, we need to undo 2 moves, 1 black and 1 white
+                    var moveData = trackMove[^1];
+                    moveData.piece.currentSquare = moveData.from;
+                    moveData.piece.previousSquare = moveData.to; // Note : can be changed to previous square instead of 2
+
+                    moveData.piece.GetComponent<RectTransform>().anchoredPosition =
+                        moveData.piece.currentSquare.GetComponent<RectTransform>().anchoredPosition;
+                    moveData.piece.SetCurrentPosition(moveData.from.gameObject.name);
+                    moveData.piece.SetOldPosition(moveData.to.gameObject.name);
+                    moveData.piece.currentRectTransform = moveData.piece.GetComponent<RectTransform>().anchoredPosition;
+                    moveData.piece.oldRectTransform = moveData.to.GetComponent<RectTransform>().anchoredPosition;
+                    
+                    trackMove.RemoveAt(trackMove.Count-1);
+                    
+                    SetNewPieceOnThis(trackMove[^1].piece.gameObject ,trackMove[^1].to.gameObject );
+            #endregion      
+        }
 
 
         #region  Mapping daa to cells
@@ -142,7 +178,6 @@ public class ChessManager :MonoBehaviour
                     {
                         for (int file = 0; file < 8; file++)
                         {
-                            
                             if (index != (8 * rank) + file)
                                 continue;
                             ChessPiece piece = p.GetComponent<ChessPiece>();
@@ -150,12 +185,19 @@ public class ChessManager :MonoBehaviour
                             p.transform.localPosition =  new Vector3(xOffset+ file *size, yOffset + rank*size );
                             piece.SetCurrentPosition(AssignCellNotation(file, rank));
                             piece.currentRectTransform = piece. GetComponent<RectTransform>().anchoredPosition;
+                            piece.currentSquare = AssignDefaultSquare(file, rank);
                             break;
                         }
                     }
 
                 }
 
+                private ChessSquare AssignDefaultSquare(int file , int rank)
+                {
+                   
+                    int index = (8 * rank) + file;
+                    return chessBoardHolder.GetChild(index).GetComponent<ChessSquare>();
+                }
 
                 private string AssignCellNotation(int file, int rank)
                 {
@@ -230,6 +272,23 @@ public enum MoveTurn
     //DOING BITWISE AND WITH THE PIECE CODE WE CAN FIND OUT WHO IS BLACK AND WHITE
     WhiteToMove, 
     BlackToMove, 
+}
+
+
+[Serializable]
+public class MoveTracker
+{
+    public ChessPiece piece;
+    public ChessSquare from;
+    public ChessSquare to;
+
+    public MoveTracker( ChessPiece p,ChessSquare oldCell, ChessSquare newCell)
+    {
+        this.piece = p;
+        this.from = oldCell;
+        this.to = newCell;
+    }
+
 }
 
 
