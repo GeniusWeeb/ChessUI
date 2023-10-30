@@ -20,7 +20,8 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     public Vector2 oldRectTransform ;
 
     public bool myTurn = false;
-    
+    public int pCode;
+    public int pColor;
     
     private RectTransform rect;
     private Image img;
@@ -76,8 +77,15 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     }
     
     public void OnDrop(PointerEventData eventData)
-    {   
-       
+    {
+        if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn ||
+            pColor == eventData.pointerDrag.GetComponent<ChessPiece>().pColor)
+        {
+            eventData.pointerDrag.GetComponent<ChessPiece>().GetComponent<RectTransform>().anchoredPosition =
+                eventData.pointerDrag.GetComponent<ChessPiece>().currentRectTransform;
+        }
+        
+
         Debug.Log(eventData.pointerDrag.name);
         
         if (eventData.pointerDrag.GetComponent<IPiece>() != null)
@@ -100,6 +108,9 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
 
     public void Captured(GameObject newPiece)
     {
+        if (pColor == newPiece.GetComponent<ChessPiece>().pColor)
+            return;
+        
         this.gameObject.SetActive(false);
         
         //CAPTURE MECHANIC PENDING

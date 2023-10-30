@@ -67,7 +67,8 @@ public class ChessManager :MonoBehaviour
             bool canMakeMove = false;
             string move = pieceName + "-" + squareName;
             moveHistory.Add(move);
-            DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , turn.ToString() );
+            var colorCode = (int)turn;
+            DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , colorCode.ToString()  );
             Connection.Instance.SendMessage(moveData);
             Debug.Log( $"<color=red> {move} </color>");
         }
@@ -151,6 +152,29 @@ public class ChessManager :MonoBehaviour
             //Calculate board state and send to engine -> good for responsiveness
         }
 
+        public void ChangesUIBasedOnTurn()
+        {
+            
+            foreach (Transform piece in parentTransform)
+            {
+                piece.gameObject.GetComponent<ChessPiece>().myTurn = false;
+                switch (turn)
+                {
+                    case MoveTurn.WhiteToMove when !isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode):
+                    case MoveTurn.BlackToMove when isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode):
+                        piece.gameObject.GetComponent<ChessPiece>().myTurn = true;
+                        break;
+                }
+            }
+        }
+
+
+        private bool isBlack(int pCode)
+        {
+            var code = pCode & (int)pieceCode.Black;
+            return code == (int)pieceCode.Black;
+        }
+
 
         #region  Mapping daa to cells
                 private void MapData(int data , int index)
@@ -166,6 +190,8 @@ public class ChessManager :MonoBehaviour
                            p.GetComponent<ChessPiece>().Init(item.piece_name ,item.piece_image);
                            p.GetComponent<Image>().sprite = item.piece_image;
                            p.gameObject.name = item.piece_name;
+                           p.gameObject.GetComponent<ChessPiece>().pCode = (int)finalCode;
+                           p.gameObject.GetComponent<ChessPiece>().pColor = (int)item.color;
                            MapDataToCell(p  ,index);
                         }
                        
@@ -244,6 +270,7 @@ public class ChessManager :MonoBehaviour
         { 
             int actualMove = move;
            turn =  actualMove == (int)pieceCode.White ? MoveTurn.WhiteToMove : MoveTurn.BlackToMove;
+           ChangesUIBasedOnTurn();
           
         }
 
