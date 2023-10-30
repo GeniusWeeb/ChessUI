@@ -18,6 +18,8 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     //SNAP POSITION TRACKERS
     public Vector2 currentRectTransform ;
     public Vector2 oldRectTransform ;
+
+    public bool myTurn = false;
     
     
     private RectTransform rect;
@@ -55,24 +57,27 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!myTurn) return; 
         img.raycastTarget = false;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
        // Debug.Log(eventData.pointerEnter.name);
-        
+       
         img.raycastTarget = true;
       
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!myTurn) return; 
         rect.anchoredPosition += eventData.delta;
     }
     
     public void OnDrop(PointerEventData eventData)
-    {
+    {   
+       
         Debug.Log(eventData.pointerDrag.name);
         
         if (eventData.pointerDrag.GetComponent<IPiece>() != null)
@@ -104,4 +109,6 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
        
     }
     #endregion
+
+    
 }

@@ -50,21 +50,27 @@ public class Connection : MonoBehaviour
        }
    }
 
-   private void ServerConnected(object sender, EventArgs e)
+   private void ServerConnected(object sender, EventArgs e) 
    {
        Debug.Log("Connected to console");
    }
    
    private void  HandleWebSocketMessage(string data)
-   {  
+   { 
        Debug.Log("<color=red> Received Data </color>" + data);
-      DataProtocol incomingData = JsonConvert.DeserializeObject<DataProtocol>(data);
-      if (incomingData.msgType == ProtocolTypes.GAMESTART.ToString()) {
+       DataProtocol incomingData = JsonConvert.DeserializeObject<DataProtocol>(data);
+      
+       Debug.Log(incomingData.msgType);
+      if (incomingData.msgType == ProtocolTypes.GAMESTART.ToString())
+      { 
+        
           var board = JsonConvert.DeserializeObject<int[]>(incomingData.data);
+      
           MainThreadDispatcher.EnQueue(
               () =>
               { 
                   Event<int[]>.GameEvent.Invoke(board);
+                  Event.changeTurn (JsonConvert.DeserializeObject<int>(incomingData.toMove));
               });
           
       }
@@ -76,6 +82,7 @@ public class Connection : MonoBehaviour
               () =>
               {
                     Event<bool>.GameEvent.Invoke(canMakeMove);
+                    Event.changeTurn (JsonConvert.DeserializeObject<int>(incomingData.toMove));
               });
       }
    }
