@@ -18,7 +18,10 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     //SNAP POSITION TRACKERS
     public Vector2 currentRectTransform ;
     public Vector2 oldRectTransform ;
-    
+
+    public bool myTurn = false;
+    public int pCode;
+    public int pColor;
     
     private RectTransform rect;
     private Image img;
@@ -55,24 +58,34 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!myTurn) return; 
         img.raycastTarget = false;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
        // Debug.Log(eventData.pointerEnter.name);
-        
+       
         img.raycastTarget = true;
       
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!myTurn) return; 
         rect.anchoredPosition += eventData.delta;
     }
     
     public void OnDrop(PointerEventData eventData)
     {
+        if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn ||
+            pColor == eventData.pointerDrag.GetComponent<ChessPiece>().pColor)
+        {
+            eventData.pointerDrag.GetComponent<ChessPiece>().GetComponent<RectTransform>().anchoredPosition =
+                eventData.pointerDrag.GetComponent<ChessPiece>().currentRectTransform;
+        }
+        
+
         Debug.Log(eventData.pointerDrag.name);
         
         if (eventData.pointerDrag.GetComponent<IPiece>() != null)
@@ -95,6 +108,9 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
 
     public void Captured(GameObject newPiece)
     {
+        if (pColor == newPiece.GetComponent<ChessPiece>().pColor)
+            return;
+        
         this.gameObject.SetActive(false);
         
         //CAPTURE MECHANIC PENDING
@@ -104,4 +120,6 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
        
     }
     #endregion
+
+    
 }

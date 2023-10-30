@@ -10,7 +10,10 @@ public class ChessSquare : MonoBehaviour, IDropHandler
     public bool captured; 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag != null  )
+        if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn)
+            return;
+        
+        if (eventData.pointerDrag != null    )
         {   
             //VALIDATION NEEDED!   //IF MOVE NOT ALLOWED -> RETURN -> GUARD CLAUSE 
             //Force the pieces previous square to be empty now that it is here

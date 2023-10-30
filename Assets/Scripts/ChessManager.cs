@@ -13,7 +13,6 @@ public class ChessManager :MonoBehaviour
         #region Variables
                 
             [SerializeField] private List<string> moveHistory;
-            
             [SerializeField] private List<MoveTracker> trackMove;
             
             [SerializeField] private ChessConfig config;
@@ -41,10 +40,10 @@ public class ChessManager :MonoBehaviour
            [SerializeField] private GameObject pieceThatMadeMove;
            [SerializeField] private GameObject squareThatPieceMovedTo;
            
-           
            [Header("Chessboard and Piece holders")] [SerializeField]
            private Transform chessBoardHolder;
 
+        
            
        
        #endregion
@@ -68,7 +67,8 @@ public class ChessManager :MonoBehaviour
             bool canMakeMove = false;
             string move = pieceName + "-" + squareName;
             moveHistory.Add(move);
-            DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move );
+            var colorCode = (int)turn;
+            DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , colorCode.ToString()  );
             Connection.Instance.SendMessage(moveData);
             Debug.Log( $"<color=red> {move} </color>");
         }
@@ -123,7 +123,9 @@ public class ChessManager :MonoBehaviour
             MoveMade();
 
         }
-
+    
+        
+        //ui interaction
         public void UndoMove()
         {
             #region UI BASED UNDO -> SEND THE BOARD STATE TO THE ENGINE
@@ -145,7 +147,32 @@ public class ChessManager :MonoBehaviour
                     trackMove.RemoveAt(trackMove.Count-1);
                     
                     SetNewPieceOnThis(trackMove[^1].piece.gameObject ,trackMove[^1].to.gameObject );
-            #endregion      
+            #endregion    
+            
+            //Calculate board state and send to engine -> good for responsiveness
+        }
+
+        public void ChangesUIBasedOnTurn()
+        {
+            
+            foreach (Transform piece in parentTransform)
+            {
+                piece.gameObject.GetComponent<ChessPiece>().myTurn = false;
+                switch (turn)
+                {
+                    case MoveTurn.WhiteToMove when !isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode):
+                    case MoveTurn.BlackToMove when isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode):
+                        piece.gameObject.GetComponent<ChessPiece>().myTurn = true;
+                        break;
+                }
+            }
+        }
+
+
+        private bool isBlack(int pCode)
+        {
+            var code = pCode & (int)pieceCode.Black;
+            return code == (int)pieceCode.Black;
         }
 
 
@@ -163,6 +190,8 @@ public class ChessManager :MonoBehaviour
                            p.GetComponent<ChessPiece>().Init(item.piece_name ,item.piece_image);
                            p.GetComponent<Image>().sprite = item.piece_image;
                            p.gameObject.name = item.piece_name;
+                           p.gameObject.GetComponent<ChessPiece>().pCode = (int)finalCode;
+                           p.gameObject.GetComponent<ChessPiece>().pColor = (int)item.color;
                            MapDataToCell(p  ,index);
                         }
                        
@@ -230,6 +259,20 @@ public class ChessManager :MonoBehaviour
                 }
 
         #endregion
+        
+       
+        public void EnforceTurnMechanic()
+        {
+            //
+        }
+
+        private void UpdateTurn(int move)
+        { 
+            int actualMove = move;
+           turn =  actualMove == (int)pieceCode.White ? MoveTurn.WhiteToMove : MoveTurn.BlackToMove;
+           ChangesUIBasedOnTurn();
+          
+        }
 
         #region Unity methods
 
@@ -238,7 +281,10 @@ public class ChessManager :MonoBehaviour
             Event<int[]>.GameEvent +=Map;
             Event<bool>.GameEvent += ValidationResult;
             Event.MoveMade += MoveMade;
+            Event.changeTurn += UpdateTurn;
         }
+
+      
 
         private void Awake()
             {
@@ -252,6 +298,8 @@ public class ChessManager :MonoBehaviour
                 Event<int[]>.GameEvent -= Map;
                 Event<bool>.GameEvent -= ValidationResult;
                 Event.MoveMade -= MoveMade;
+                Event.changeTurn -= UpdateTurn;
+
             }
 
           
@@ -270,8 +318,8 @@ public class PandIndex
 public enum MoveTurn
 {
     //DOING BITWISE AND WITH THE PIECE CODE WE CAN FIND OUT WHO IS BLACK AND WHITE
-    WhiteToMove, 
-    BlackToMove, 
+    WhiteToMove =16 ,
+    BlackToMove =32 ,
 }
 
 
