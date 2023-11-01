@@ -11,6 +11,8 @@ public class ChessConfig : ScriptableObject
 {
 
     public List<Piece> pieceList;
+
+    public Color highlightColor;
     
 }
 

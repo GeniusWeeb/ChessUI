@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -43,12 +44,14 @@ public class ChessManager :MonoBehaviour
            [Header("Chessboard and Piece holders")] [SerializeField]
            private Transform chessBoardHolder;
 
-        
+
+           public bool requestedData = false;
            
        
        #endregion
        
-        
+       
+       
         public static ChessManager Instance
         { get; private set;
         }
@@ -60,6 +63,7 @@ public class ChessManager :MonoBehaviour
             moveCounterTxt.text = moveCounter.ToString();
         }
 
+        public ChessConfig GetChessConfig => config;
         
         //REQUIRES MOVE PROTOCOL
         public void SendMoveMadeToEngine(string pieceName , string squareName)
@@ -123,8 +127,16 @@ public class ChessManager :MonoBehaviour
             MoveMade();
 
         }
-    
-        
+
+        public void RequestPossibleCellDataForThisIndex(int index)
+        {   //send index here
+
+            string  data = index.ToString();
+           DataProtocol moveData = new DataProtocol(ProtocolTypes.INDICATE.ToString(), data, null);
+           Connection.Instance.SendMessage(moveData);
+        }
+
+
         //ui interaction
         public void UndoMove()
         {
@@ -258,7 +270,10 @@ public class ChessManager :MonoBehaviour
                     }
                 }
 
-        #endregion
+
+               
+
+                #endregion
         
        
         public void EnforceTurnMechanic()
@@ -282,6 +297,7 @@ public class ChessManager :MonoBehaviour
             Event<bool>.GameEvent += ValidationResult;
             Event.MoveMade += MoveMade;
             Event.changeTurn += UpdateTurn;
+            
         }
 
       
