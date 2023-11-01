@@ -37,8 +37,11 @@ public class SceneManager : MonoBehaviour
                 obj.transform.SetParent(panel);
                 obj.transform.localScale = Vector3.one;
                 obj.transform.localPosition=  new Vector3(xOffset+ file *size, yOffset + rank*size );
-                obj.transform.GetComponent<ChessSquare>().squreText.text = ((8 * rank) + file).ToString();
-                obj.GetComponent<Image>().color = (file + rank) % 2 == 0 ? Color.grey : Color.white;
+                ChessSquare square = obj.GetComponent<ChessSquare>();
+                square.squreText.text = ((8 * rank) + file).ToString();
+                square.currentIndex = ((8 * rank + file));
+                 var col = square.GetComponent<Image>().color= (file + rank) % 2 == 0 ? Color.grey : Color.white;
+                 square.SetDefaultColor(col);
                 obj.name = file switch
                 {
                     0 => "a" + (rank + 1),

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
 using Newtonsoft.Json;
@@ -61,6 +62,8 @@ public class Connection : MonoBehaviour
        DataProtocol incomingData = JsonConvert.DeserializeObject<DataProtocol>(data);
       
        Debug.Log(incomingData.msgType);
+       
+       //DEFAULT GAME START
       if (incomingData.msgType == ProtocolTypes.GAMESTART.ToString())
       { 
         
@@ -74,7 +77,7 @@ public class Connection : MonoBehaviour
               });
           
       }
-      
+      //ALLOWS MOVEMENT BASED ON VALIDATION FROM THE ENGINE
       else if (incomingData.msgType == ProtocolTypes.VALIDATE.ToString())
       { 
           bool canMakeMove = JsonConvert.DeserializeObject<bool>(incomingData.data);
@@ -84,6 +87,22 @@ public class Connection : MonoBehaviour
                     Event<bool>.GameEvent.Invoke(canMakeMove);
                     Event.changeTurn (JsonConvert.DeserializeObject<int>(incomingData.toMove));
               });
+          
+      }
+      
+      //RECEIVES DATA THAT WILL SHOW THE SQUARES WE CAN MOVE TO
+      else if (incomingData.msgType == ProtocolTypes.INDICATE.ToString())
+      {
+       
+          HashSet<int> squares = JsonConvert.DeserializeObject<HashSet<int>>(incomingData.data);
+         
+          MainThreadDispatcher.EnQueue(
+              () =>
+              {
+                  Event<HashSet<int>>.GameUIShowCell.Invoke(squares);
+                  
+              });
+
       }
    }
 

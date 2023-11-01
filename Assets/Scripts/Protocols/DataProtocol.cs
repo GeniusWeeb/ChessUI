@@ -25,11 +25,12 @@
 
  public enum ProtocolTypes
  {
-     MOVE,
+     MOVE, //SENT
      BOARDSTATE,
-     GAMESTART,
-     GAMEEND,
-     VALIDATE
+     GAMESTART, //RECEIVED
+     GAMEEND, 
+     VALIDATE ,//RECEIVED ,
+     INDICATE, //RECEIVED //SENT
  }
 
 

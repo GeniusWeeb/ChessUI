@@ -57,27 +57,39 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     #region Pointer Events
 
     public void OnBeginDrag(PointerEventData eventData)
-    {
+    {   
+       
         if (!myTurn) return; 
         img.raycastTarget = false;
     }
 
     public void OnEndDrag(PointerEventData eventData)
-    {
-       // Debug.Log(eventData.pointerEnter.name);
-       
+    {   
+        //Debug.Log("Drag finish maybe");
+        Event.ResetCellColor.Invoke();
+        ChessManager.Instance.requestedData = false;
+        
+        //DISABLE UI INDICATOR HERE FOR CELLS
         img.raycastTarget = true;
       
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+       
+        if (!ChessManager.Instance.requestedData)
+        {
+            ChessManager.Instance.RequestPossibleCellDataForThisIndex(currentSquare.currentIndex);
+            ChessManager.Instance.requestedData = true;
+        }
+
         if (!myTurn) return; 
         rect.anchoredPosition += eventData.delta;
     }
     
     public void OnDrop(PointerEventData eventData)
-    {
+    {     
+        
         if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn ||
             pColor == eventData.pointerDrag.GetComponent<ChessPiece>().pColor)
         {
