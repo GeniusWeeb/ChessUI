@@ -22,6 +22,7 @@ public class ChessSquare : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {   
         
+        Debug.Log("Dropped on this");
         if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn)
             return;
         

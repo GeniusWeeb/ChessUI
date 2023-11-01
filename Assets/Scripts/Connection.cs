@@ -102,7 +102,6 @@ public class Connection : MonoBehaviour
                   Event<HashSet<int>>.GameUIShowCell.Invoke(squares);
                   
               });
-
       }
    }
 

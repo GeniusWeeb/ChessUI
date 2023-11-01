@@ -97,8 +97,6 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
                 eventData.pointerDrag.GetComponent<ChessPiece>().currentRectTransform;
         }
         
-
-        Debug.Log(eventData.pointerDrag.name);
         
         if (eventData.pointerDrag.GetComponent<IPiece>() != null)
         { 
@@ -124,10 +122,11 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
             return;
         
         this.gameObject.SetActive(false);
+        ChessManager.Instance.SetCapturePiece(this.gameObject);
         
         //CAPTURE MECHANIC PENDING
-            
-        //currentSquare.SetNewPieceOnThis(newPiece);
+        var moveHistory = newPiece.GetComponent<ChessPiece>().GetCurrentPosition + "" + currentSquare.gameObject.name;
+        ChessManager.Instance.SendMoveMadeToEngine( newPiece.gameObject.name,moveHistory);
         ChessManager.Instance.SetNewPieceOnThis(newPiece ,currentSquare.gameObject);
        
     }

@@ -61,3 +61,4 @@ MonoBehaviour:
     piece_image: {fileID: 830717348, guid: f6e4a41bbf71444f2961bbf0bd7a23e3, type: 3}
     code: 1
     color: 32
+  highlightColor: {r: 0.59966534, g: 0.9245283, b: 0.4862745, a: 0.7019608}

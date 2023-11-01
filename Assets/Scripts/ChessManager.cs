@@ -46,6 +46,9 @@ public class ChessManager :MonoBehaviour
 
 
            public bool requestedData = false;
+
+           [SerializeField] private GameObject capturedPiece;
+           
            
        
        #endregion
@@ -68,6 +71,7 @@ public class ChessManager :MonoBehaviour
         //REQUIRES MOVE PROTOCOL
         public void SendMoveMadeToEngine(string pieceName , string squareName)
         {
+            Debug.Log("HE TRYNA MAKE A MOVE");
             bool canMakeMove = false;
             string move = pieceName + "-" + squareName;
             moveHistory.Add(move);
@@ -93,9 +97,13 @@ public class ChessManager :MonoBehaviour
         }
 
         private void ResetPiecePosition()
-        {
+        {   
             pieceThatMadeMove.GetComponent<RectTransform>().anchoredPosition =
                 pieceThatMadeMove.GetComponent<ChessPiece>().currentRectTransform;
+            if(capturedPiece!=null)     capturedPiece.SetActive(true);
+            
+            
+            SetCapturePiece(null);
             pieceThatMadeMove = null;
             squareThatPieceMovedTo = null;
         }
@@ -108,6 +116,7 @@ public class ChessManager :MonoBehaviour
         }
         private void PerformMoveFinal()
         {
+            SetCapturePiece(null);
             GameObject p = pieceThatMadeMove;
             GameObject newSquare = squareThatPieceMovedTo;
             // IF MOVE IS NOT CORRECT , SNAP IT BACK TO OLD POSITION AND JUST RETURN
@@ -187,6 +196,12 @@ public class ChessManager :MonoBehaviour
             return code == (int)pieceCode.Black;
         }
 
+        public GameObject GetCapturedPiece => capturedPiece;
+
+        public void SetCapturePiece(GameObject p)
+        {
+            capturedPiece = p;
+        }
 
         #region  Mapping daa to cells
                 private void MapData(int data , int index)
@@ -317,10 +332,10 @@ public class ChessManager :MonoBehaviour
                 Event.changeTurn -= UpdateTurn;
 
             }
-
-          
-
+            
             #endregion
+            
+            
 
     }
 
