@@ -1,11 +1,12 @@
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ChessSquare : MonoBehaviour, IDropHandler 
+public class ChessSquare : MonoBehaviour, IDropHandler
 {
-
+    public TextMeshProUGUI squreText;
     public ChessPiece currentP;
     public bool captured; 
     public void OnDrop(PointerEventData eventData)
