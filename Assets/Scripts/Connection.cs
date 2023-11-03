@@ -54,14 +54,13 @@ public class Connection : MonoBehaviour
    private void ServerConnected(object sender, EventArgs e) 
    {
        Debug.Log("Connected to console");
+       Event.ConnectedToConsole.Invoke();
    }
    
    private void  HandleWebSocketMessage(string data)
    { 
        Debug.Log("<color=red> Received Data </color>" + data);
        DataProtocol incomingData = JsonConvert.DeserializeObject<DataProtocol>(data);
-      
-       Debug.Log(incomingData.msgType);
        
        //DEFAULT GAME START
       if (incomingData.msgType == ProtocolTypes.GAMESTART.ToString())

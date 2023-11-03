@@ -13,6 +13,7 @@
         public static  Action MoveMade;
         public static Action<int> changeTurn = delegate(int i) {  };
         public static Action ResetCellColor;
+        public static Action ConnectedToConsole;
     }
 
  

@@ -2,18 +2,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
 
 
 public class ChessManager :MonoBehaviour
     {
         #region Variables
-                
-            [SerializeField] private List<string> moveHistory;
+
+
+
+        [SerializeField] private GameMode currentGameMode;
+        [SerializeField] private MoveTurn myPieceColour; 
+           
             [SerializeField] private List<MoveTracker> trackMove;
             
             [SerializeField] private ChessConfig config;
@@ -53,8 +55,10 @@ public class ChessManager :MonoBehaviour
            
        
        #endregion
-       
-       
+
+
+
+       // default colour choice
        
         public static ChessManager Instance
         { get; private set;
@@ -119,6 +123,8 @@ public class ChessManager :MonoBehaviour
         }
         private void PerformMoveFinal()
         {
+            if (pieceThatMadeMove == null || squareThatPieceMovedTo == null)
+                return;
             SetCapturePiece(null);
             GameObject p = pieceThatMadeMove;
             GameObject newSquare = squareThatPieceMovedTo;
@@ -144,8 +150,8 @@ public class ChessManager :MonoBehaviour
          
 
         }
-        
-       
+
+        public bool isConsoleReady = false;
         
 
         public void RequestPossibleCellDataForThisIndex(int index)
@@ -183,17 +189,21 @@ public class ChessManager :MonoBehaviour
             
             //Calculate board state and send to engine -> good for responsiveness
         }
+        
+        
+        //ALLOW MOVEMENT
 
-        public void ChangesUIBasedOnTurn()
+        private void ChangesUIBasedOnTurn()
         {
             
             foreach (Transform piece in parentTransform)
-            {
+            {   
                 piece.gameObject.GetComponent<ChessPiece>().myTurn = false;
+                if (turn != myPieceColour && currentGameMode == GameMode.PlayerVsBot) return;
                 switch (turn)
                 {
-                    case MoveTurn.WhiteToMove when !isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode):
-                    case MoveTurn.BlackToMove when isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode):
+                    case MoveTurn.WhiteToMove when !isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode)  :
+                    case MoveTurn.BlackToMove when isBlack(piece.gameObject.GetComponent<ChessPiece>().pCode)  :
                         piece.gameObject.GetComponent<ChessPiece>().myTurn = true;
                         break;
                 }
@@ -214,7 +224,7 @@ public class ChessManager :MonoBehaviour
             capturedPiece = p;
         }
 
-
+        
         private void UpdateUIFromEngine(List<int> FromToIndexData)
         {
             int fromIndex = FromToIndexData[0];
@@ -241,6 +251,18 @@ public class ChessManager :MonoBehaviour
             StartCoroutine((delay(fromObject.GetComponent<ChessSquare>().currentP.gameObject, toObject)));
 
         }
+
+        public void SetUpGame()
+        {
+            var dataToSend = currentGameMode + "-" + (int)myPieceColour;
+            Debug.Log($"mode is {currentGameMode} and  colour chosen is {myPieceColour}");
+            DataProtocol finalData = new DataProtocol(ProtocolTypes.GAMEMODE.ToString(),dataToSend,null);
+            if (!isConsoleReady && currentGameMode == GameMode.None ) return;
+            Connection.Instance.SendMessage(finalData);
+
+        }
+
+        public MoveTurn GetMyPColor => myPieceColour; 
 
         #region  Mapping daa to cells
                 private void MapData(int data , int index)
@@ -329,15 +351,16 @@ public class ChessManager :MonoBehaviour
                
 
                 #endregion
-        
-       
-        public void EnforceTurnMechanic()
+
+
+        private void ConnectedToConsole()
         {
-            //
+            isConsoleReady = true;
         }
 
         private void UpdateTurn(int move)
         { 
+            
             int actualMove = move;
            turn =  actualMove == (int)pieceCode.White ? MoveTurn.WhiteToMove : MoveTurn.BlackToMove;
            ChangesUIBasedOnTurn();
@@ -353,14 +376,14 @@ public class ChessManager :MonoBehaviour
             Event.MoveMade += MoveMade;
             Event.changeTurn += UpdateTurn;
             Event<List<int>>.GameEvent += UpdateUIFromEngine;
-
+            Event.ConnectedToConsole += ConnectedToConsole;
 
         }
-
+    
 
         public IEnumerator delay(GameObject fromObject , GameObject toObject)
         {
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(1f);
             SetNewPieceOnThis(fromObject, toObject);
             PerformMoveFinal();
         }
@@ -379,6 +402,8 @@ public class ChessManager :MonoBehaviour
                 Event.MoveMade -= MoveMade;
                 Event.changeTurn -= UpdateTurn;
                 Event<List<int>>.GameEvent -= UpdateUIFromEngine;
+                Event.ConnectedToConsole += ConnectedToConsole;
+
 
             }
             
@@ -418,6 +443,15 @@ public class MoveTracker
     }
 
 }
+
+public enum GameMode
+{
+    PlayerVsPlayer ,
+    PlayerVsBot ,
+    BotVsBot,
+    None
+}
+
 
 
 
