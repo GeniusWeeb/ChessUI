@@ -53,15 +53,13 @@ public class Connection : MonoBehaviour
 
    private void ServerConnected(object sender, EventArgs e) 
    {
-       Debug.Log("Connected to console");
+       Debug.Log("<color=green><b>Connected to console</b></color>");
+       Event.ConnectedToConsole.Invoke();
    }
    
    private void  HandleWebSocketMessage(string data)
    { 
-       Debug.Log("<color=red> Received Data </color>" + data);
        DataProtocol incomingData = JsonConvert.DeserializeObject<DataProtocol>(data);
-      
-       Debug.Log(incomingData.msgType);
        
        //DEFAULT GAME START
       if (incomingData.msgType == ProtocolTypes.GAMESTART.ToString())
@@ -79,7 +77,9 @@ public class Connection : MonoBehaviour
       }
       //ALLOWS MOVEMENT BASED ON VALIDATION FROM THE ENGINE
       else if (incomingData.msgType == ProtocolTypes.VALIDATE.ToString())
-      { 
+      {     
+          Debug.Log("<color=red> Received Data </color>" + data);
+
           bool canMakeMove = JsonConvert.DeserializeObject<bool>(incomingData.data);
           MainThreadDispatcher.EnQueue(
               () =>
@@ -105,13 +105,16 @@ public class Connection : MonoBehaviour
       }
       else if (incomingData.msgType == ProtocolTypes.UPDATEUI.ToString())
       {
-       
+          
+          //Since the bot makes this , it is accepted
+          Debug.Log("<color=red> Received Data </color>" + data);
           List<int> newIndexUpdate = JsonConvert.DeserializeObject<List<int>>(incomingData.data);
           
           MainThreadDispatcher.EnQueue(
               () =>
               {
                   Event<List<int>>.GameEvent.Invoke(newIndexUpdate);
+                  Event.changeTurn (JsonConvert.DeserializeObject<int>(incomingData.toMove));
                   
               });
       }
@@ -121,7 +124,7 @@ public class Connection : MonoBehaviour
    public void SendMessage<T>(T data )
    {
        var toSend =JsonConvert.SerializeObject(data);
-       Debug.Log(toSend);
+  //     Debug.Log(toSend);
        ws.Send(toSend);
    }
 

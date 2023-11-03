@@ -22,7 +22,7 @@ public class ChessSquare : MonoBehaviour, IDropHandler
     public void OnDrop(PointerEventData eventData)
     {   
         
-        Debug.Log("Dropped on this");
+      
         if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn)
             return;
         
@@ -40,8 +40,7 @@ public class ChessSquare : MonoBehaviour, IDropHandler
 
             if (currentP.currentRectTransform == this.GetComponent<RectTransform>().anchoredPosition)
                 return;
-
-    
+            
             string moveHistory = currentP.GetCurrentPosition+""+this.gameObject.name;
             
             // Control should not return here again to this chess square once the move has been sent to validate

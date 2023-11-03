@@ -26,7 +26,7 @@
  public enum ProtocolTypes
  {
      MOVE, //SENT
-     BOARDSTATE,
+     GAMEMODE,
      GAMESTART, //RECEIVED
      GAMEEND, 
      VALIDATE ,//RECEIVED ,
