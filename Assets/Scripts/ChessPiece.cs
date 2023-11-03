@@ -90,6 +90,8 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     public void OnDrop(PointerEventData eventData)
     {     
         
+        
+     
         if (!eventData.pointerDrag.GetComponent<ChessPiece>().myTurn ||
             pColor == eventData.pointerDrag.GetComponent<ChessPiece>().pColor)
         {

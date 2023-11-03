@@ -1,33 +1,33 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
 
 
-    public class MainThreadDispatcher : MonoBehaviour
-    {
-
-        private static readonly Queue<Action> executionQueue = new Queue<Action>();
-
-        private void Update()
+        public class MainThreadDispatcher : MonoBehaviour
         {
-            lock (executionQueue)
+
+            private static readonly Queue<Action> executionQueue = new Queue<Action>();
+
+            private void Update()
             {
-                while (executionQueue.Count > 0 )
+                lock (executionQueue)
                 {
-                    executionQueue.Dequeue().Invoke();
+                    while (executionQueue.Count > 0 )
+                    {
+                        executionQueue.Dequeue().Invoke();
+                        
+                    }
                     
                 }
-                
             }
-        }
 
 
-        public static void EnQueue(Action action)
-        {
-            lock (executionQueue)
+            public static void EnQueue(Action action)
             {
-                executionQueue.Enqueue(action);
+                lock (executionQueue)
+                {
+                    executionQueue.Enqueue(action);
+                }
             }
         }
-    }

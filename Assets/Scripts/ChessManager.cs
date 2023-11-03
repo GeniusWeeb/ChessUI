@@ -76,14 +76,14 @@ public class ChessManager :MonoBehaviour
         //REQUIRES MOVE PROTOCOL
         public void SendMoveMadeToEngine(string pieceName , string squareName)
         {
-            Debug.Log("HE TRYNA MAKE A MOVE");
+          
             bool canMakeMove = false;
             string move = pieceName + "-" + squareName;
             //moveHistory.Add(move);
             var colorCode = (int)turn;
             DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , colorCode.ToString()  );
             Connection.Instance.SendMessage(moveData);
-            Debug.Log( $"<color=red> {move} </color>");
+            //Debug.log( $"<color=red> {move} </color>");
         }
    
         private void ValidationResult( bool canMove)
@@ -91,16 +91,18 @@ public class ChessManager :MonoBehaviour
 
             if (canMove)
             {   
-                Debug.Log("Move can take place");
+              //  //Debug.log("Move can take place");
                 PerformMoveFinal();
             }
             else
             {
-                Debug.Log("Move cant take place");
+                ////Debug.log("Move cant take place");
                 ResetPiecePosition();
             }
-        }
 
+          
+        }
+        
         private void ResetPiecePosition()
         {   
             pieceThatMadeMove.GetComponent<RectTransform>().anchoredPosition =
@@ -117,33 +119,50 @@ public class ChessManager :MonoBehaviour
         //Just set temporary
         public void SetNewPieceOnThis(GameObject p , GameObject newSquare)
         {
+            Debug.Log("Setting this new pieces");
             pieceThatMadeMove = p;
             squareThatPieceMovedTo = newSquare;
-            Debug.Log($"piece is {p.name} and square is {newSquare.name}");
+   
         }
         private void PerformMoveFinal()
         {
+
             if (pieceThatMadeMove == null || squareThatPieceMovedTo == null)
+            {
+                Debug.Log("<color=yellow> Already returning</color>");
                 return;
+            }
+            
+            Debug.Log("<color=blue>Now we can set the performFinalMove</color>");
+
             SetCapturePiece(null);
             GameObject p = pieceThatMadeMove;
             GameObject newSquare = squareThatPieceMovedTo;
             // IF MOVE IS NOT CORRECT , SNAP IT BACK TO OLD POSITION AND JUST RETURN
             //CONFIRMATION THAT THE MOVE IS SUCCESSFUL
-           // ChessPiece  currentP = newSquare.GetComponent<ChessSquare>().currentP;
+
+
+
             ChessPiece currentP = p.GetComponent<ChessPiece>();
-            //UPDATE TRANSFORMS ONCE MOVE HAS BEE MADE
+            
+            //Setting previous square
+            currentP.previousSquare = currentP.currentSquare;
+            currentP.previousSquare.currentP = null;
+            
+            //updating the new square
+            squareThatPieceMovedTo.GetComponent<ChessSquare>().currentP = currentP;
+            currentP.currentSquare = squareThatPieceMovedTo.GetComponent<ChessSquare>();
+            
+            
+            
             currentP.oldRectTransform = currentP.currentRectTransform;
             currentP.currentRectTransform = newSquare.GetComponent<RectTransform>().anchoredPosition;
-            currentP.previousSquare = currentP.currentSquare;
-            currentP.currentSquare = newSquare.gameObject.GetComponent<ChessSquare>();
             currentP.SetOldPosition(currentP.GetCurrentPosition);
             currentP.SetCurrentPosition(newSquare.gameObject.name);
-            currentP.GetComponent<RectTransform>().anchoredPosition =
-                newSquare.GetComponent<RectTransform>().anchoredPosition;
+            currentP.GetComponent<RectTransform>().anchoredPosition = newSquare.GetComponent<RectTransform>().anchoredPosition;
 
+         
             
-            Debug.Log($"current p is {currentP}  and previous squre {currentP.previousSquare} nad curren square is {currentP.currentSquare}");
            
             trackMove.Add( new MoveTracker( currentP,currentP.previousSquare ,currentP.currentSquare));
             MoveMade();
@@ -247,15 +266,32 @@ public class ChessManager :MonoBehaviour
                     
                 }
             }
+            var from = fromObject.gameObject.GetComponent<ChessSquare>();
+            if (from.currentP == null) {
+                Debug.Log($"<color=yellow> From  index {fromIndex} P is null</color>");
+                return;
+            }
+            CheckIfPieceCapturedUI(toObject);
+            SetNewPieceOnThis(from.currentP.gameObject, toObject);
+            PerformMoveFinal();
+        }
 
-            StartCoroutine((delay(fromObject.GetComponent<ChessSquare>().currentP.gameObject, toObject)));
 
+        private void CheckIfPieceCapturedUI(GameObject toSquare)
+        {
+            ChessSquare sq = toSquare.GetComponent<ChessSquare>();
+
+            if (sq.currentP != null)
+            {
+                Debug.Log("Capturing piece");
+                sq.currentP.gameObject.SetActive(false);
+                SetCapturePiece(sq.currentP.gameObject);
+            }
         }
 
         public void SetUpGame()
         {
             var dataToSend = currentGameMode + "-" + (int)myPieceColour;
-            Debug.Log($"mode is {currentGameMode} and  colour chosen is {myPieceColour}");
             DataProtocol finalData = new DataProtocol(ProtocolTypes.GAMEMODE.ToString(),dataToSend,null);
             if (!isConsoleReady && currentGameMode == GameMode.None ) return;
             Connection.Instance.SendMessage(finalData);
@@ -381,12 +417,7 @@ public class ChessManager :MonoBehaviour
         }
     
 
-        public IEnumerator delay(GameObject fromObject , GameObject toObject)
-        {
-            yield return new WaitForSeconds(1f);
-            SetNewPieceOnThis(fromObject, toObject);
-            PerformMoveFinal();
-        }
+     
 
         private void Awake()
             {

@@ -286,6 +286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c81ceb63c04801850961b31a00f130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentGameMode: 1
+  myPieceColour: 32
   trackMove: []
   config: {fileID: 11400000, guid: 0da1d49bbef9c45a38366476ba9086fe, type: 2}
   parentTransform: {fileID: 765684144}
@@ -308,8 +310,6 @@ MonoBehaviour:
   chessBoardHolder: {fileID: 1921739971}
   requestedData: 0
   capturedPiece: {fileID: 0}
-  currentGameMode: 3
-  myPieceColour: 0
   isConsoleReady: 0
 --- !u!4 &279750931
 Transform:
