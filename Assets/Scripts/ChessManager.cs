@@ -48,7 +48,8 @@ public class ChessManager :MonoBehaviour
            public bool requestedData = false;
 
            [SerializeField] private GameObject capturedPiece;
-           
+           private GameObject samplefrom;
+           private GameObject SampleTO;
            
        
        #endregion
@@ -74,7 +75,7 @@ public class ChessManager :MonoBehaviour
             Debug.Log("HE TRYNA MAKE A MOVE");
             bool canMakeMove = false;
             string move = pieceName + "-" + squareName;
-            moveHistory.Add(move);
+            //moveHistory.Add(move);
             var colorCode = (int)turn;
             DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , colorCode.ToString()  );
             Connection.Instance.SendMessage(moveData);
@@ -101,6 +102,7 @@ public class ChessManager :MonoBehaviour
             pieceThatMadeMove.GetComponent<RectTransform>().anchoredPosition =
                 pieceThatMadeMove.GetComponent<ChessPiece>().currentRectTransform;
             if(capturedPiece!=null)     capturedPiece.SetActive(true);
+           
             
             
             SetCapturePiece(null);
@@ -113,6 +115,7 @@ public class ChessManager :MonoBehaviour
         {
             pieceThatMadeMove = p;
             squareThatPieceMovedTo = newSquare;
+            Debug.Log($"piece is {p.name} and square is {newSquare.name}");
         }
         private void PerformMoveFinal()
         {
@@ -121,8 +124,8 @@ public class ChessManager :MonoBehaviour
             GameObject newSquare = squareThatPieceMovedTo;
             // IF MOVE IS NOT CORRECT , SNAP IT BACK TO OLD POSITION AND JUST RETURN
             //CONFIRMATION THAT THE MOVE IS SUCCESSFUL
-            ChessPiece  currentP = newSquare.GetComponent<ChessSquare>().currentP;
-            currentP = p.GetComponent<ChessPiece>();
+           // ChessPiece  currentP = newSquare.GetComponent<ChessSquare>().currentP;
+            ChessPiece currentP = p.GetComponent<ChessPiece>();
             //UPDATE TRANSFORMS ONCE MOVE HAS BEE MADE
             currentP.oldRectTransform = currentP.currentRectTransform;
             currentP.currentRectTransform = newSquare.GetComponent<RectTransform>().anchoredPosition;
@@ -130,12 +133,20 @@ public class ChessManager :MonoBehaviour
             currentP.currentSquare = newSquare.gameObject.GetComponent<ChessSquare>();
             currentP.SetOldPosition(currentP.GetCurrentPosition);
             currentP.SetCurrentPosition(newSquare.gameObject.name);
+            currentP.GetComponent<RectTransform>().anchoredPosition =
+                newSquare.GetComponent<RectTransform>().anchoredPosition;
+
             
-            
+            Debug.Log($"current p is {currentP}  and previous squre {currentP.previousSquare} nad curren square is {currentP.currentSquare}");
+           
             trackMove.Add( new MoveTracker( currentP,currentP.previousSquare ,currentP.currentSquare));
             MoveMade();
+         
 
         }
+        
+       
+        
 
         public void RequestPossibleCellDataForThisIndex(int index)
         {   //send index here
@@ -203,6 +214,34 @@ public class ChessManager :MonoBehaviour
             capturedPiece = p;
         }
 
+
+        private void UpdateUIFromEngine(List<int> FromToIndexData)
+        {
+            int fromIndex = FromToIndexData[0];
+            int toIndex = FromToIndexData[1];
+         
+            GameObject fromObject =null, toObject =null;
+
+            foreach (Transform item in chessBoardHolder)
+            {
+                var p = item.gameObject.GetComponent<ChessSquare>();
+                if (p.currentIndex == fromIndex)
+                {
+                    fromObject = p.gameObject;
+                   
+                }
+                if (p.currentIndex == toIndex)
+                {
+                    toObject = p.gameObject;
+                 
+                    
+                }
+            }
+
+            StartCoroutine((delay(fromObject.GetComponent<ChessSquare>().currentP.gameObject, toObject)));
+
+        }
+
         #region  Mapping daa to cells
                 private void MapData(int data , int index)
                 {
@@ -242,6 +281,7 @@ public class ChessManager :MonoBehaviour
                             piece.SetCurrentPosition(AssignCellNotation(file, rank));
                             piece.currentRectTransform = piece. GetComponent<RectTransform>().anchoredPosition;
                             piece.currentSquare = AssignDefaultSquare(file, rank);
+                            piece.currentSquare.GetComponent<ChessSquare>().currentP = piece;
                             break;
                         }
                     }
@@ -312,10 +352,18 @@ public class ChessManager :MonoBehaviour
             Event<bool>.GameEvent += ValidationResult;
             Event.MoveMade += MoveMade;
             Event.changeTurn += UpdateTurn;
-            
+            Event<List<int>>.GameEvent += UpdateUIFromEngine;
+
+
         }
 
-      
+
+        public IEnumerator delay(GameObject fromObject , GameObject toObject)
+        {
+            yield return new WaitForSeconds(0.4f);
+            SetNewPieceOnThis(fromObject, toObject);
+            PerformMoveFinal();
+        }
 
         private void Awake()
             {
@@ -330,6 +378,7 @@ public class ChessManager :MonoBehaviour
                 Event<bool>.GameEvent -= ValidationResult;
                 Event.MoveMade -= MoveMade;
                 Event.changeTurn -= UpdateTurn;
+                Event<List<int>>.GameEvent -= UpdateUIFromEngine;
 
             }
             

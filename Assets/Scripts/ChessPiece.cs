@@ -64,11 +64,11 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
     }
 
     public void OnEndDrag(PointerEventData eventData)
-    {   
+    {
+      
         //Debug.Log("Drag finish maybe");
         Event.ResetCellColor.Invoke();
         ChessManager.Instance.requestedData = false;
-        
         //DISABLE UI INDICATOR HERE FOR CELLS
         img.raycastTarget = true;
       

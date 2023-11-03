@@ -158,7 +158,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 335.85803, y: -332.55414}
-  m_SizeDelta: {x: 258.5659, y: 43.783}
+  m_SizeDelta: {x: 300, y: 43.783}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &160456822
 MonoBehaviour:
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: xx
+  m_text: black to move
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e36b4bb3c98b1430a9c9eb7996887416, type: 2}
   m_sharedMaterial: {fileID: -1345224725818621746, guid: e36b4bb3c98b1430a9c9eb7996887416, type: 2}
@@ -189,8 +189,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4292542209
-  m_fontColor: {r: 0.0047169924, g: 1, b: 0.85412925, a: 1}
+    rgba: 4278248112
+  m_fontColor: {r: 0.6906879, g: 0.8862745, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -307,6 +307,8 @@ MonoBehaviour:
   pieceThatMadeMove: {fileID: 0}
   squareThatPieceMovedTo: {fileID: 0}
   chessBoardHolder: {fileID: 1921739971}
+  requestedData: 0
+  capturedPiece: {fileID: 0}
 --- !u!4 &279750931
 Transform:
   m_ObjectHideFlags: 0
@@ -1183,7 +1185,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: 0
   m_CullingMask:

@@ -103,6 +103,18 @@ public class Connection : MonoBehaviour
                   
               });
       }
+      else if (incomingData.msgType == ProtocolTypes.UPDATEUI.ToString())
+      {
+       
+          List<int> newIndexUpdate = JsonConvert.DeserializeObject<List<int>>(incomingData.data);
+          
+          MainThreadDispatcher.EnQueue(
+              () =>
+              {
+                  Event<List<int>>.GameEvent.Invoke(newIndexUpdate);
+                  
+              });
+      }
    }
 
 
