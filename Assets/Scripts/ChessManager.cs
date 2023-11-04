@@ -120,7 +120,7 @@ public class ChessManager :MonoBehaviour
         //Just set temporary
         public void SetNewPieceOnThis(GameObject p , GameObject newSquare)
         {
-            Debug.Log("Setting this new pieces");
+          
             pieceThatMadeMove = p;
             squareThatPieceMovedTo = newSquare;
    
