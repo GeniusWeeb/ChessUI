@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using TMPro;
 using UnityEngine;
 using Image = UnityEngine.UI.Image;
@@ -77,14 +78,14 @@ public class ChessManager :MonoBehaviour
         public void SendMoveMadeToEngine(int currentSquare , int targetSquare)
         {
             
-            
+          
             //We dont have the piece name here
             bool canMakeMove = false;
             string move = currentSquare + "-" + targetSquare;
             var colorCode = (int)turn;
             DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , colorCode.ToString()  );
             Connection.Instance.SendMessage(moveData);
-            Debug.Log( $"<color=red>  {pieceThatMadeMove.name} to  {move} </color>");
+            Debug.Log( $"<color=red> {move} </color>");
         }
    
         private void ValidationResult( bool canMove)
@@ -108,13 +109,12 @@ public class ChessManager :MonoBehaviour
         {   
             pieceThatMadeMove.GetComponent<RectTransform>().anchoredPosition =
                 pieceThatMadeMove.GetComponent<ChessPiece>().currentRectTransform;
-            if(capturedPiece!=null)     capturedPiece.SetActive(true);
-           
-            
-            
+            if(capturedPiece!=null)    capturedPiece.SetActive(true);
             SetCapturePiece(null);
-            pieceThatMadeMove = null;
-            squareThatPieceMovedTo = null;
+
+            if (pieceThatMadeMove == null) return;
+                pieceThatMadeMove = null;
+                squareThatPieceMovedTo = null;
         }
 
         //Just set temporary
@@ -407,6 +407,7 @@ public class ChessManager :MonoBehaviour
             Event.changeTurn += UpdateTurn;
             Event<List<int>>.GameEvent += UpdateUIFromEngine;
             Event.ConnectedToConsole += ConnectedToConsole;
+           
 
         }
     
