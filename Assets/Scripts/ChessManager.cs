@@ -74,16 +74,17 @@ public class ChessManager :MonoBehaviour
         public ChessConfig GetChessConfig => config;
         
         //REQUIRES MOVE PROTOCOL
-        public void SendMoveMadeToEngine(string pieceName , string squareName)
+        public void SendMoveMadeToEngine(int currentSquare , int targetSquare)
         {
-          
+            
+            
+            //We dont have the piece name here
             bool canMakeMove = false;
-            string move = pieceName + "-" + squareName;
-            //moveHistory.Add(move);
+            string move = currentSquare + "-" + targetSquare;
             var colorCode = (int)turn;
             DataProtocol moveData = new DataProtocol(ProtocolTypes.MOVE.ToString() , move , colorCode.ToString()  );
             Connection.Instance.SendMessage(moveData);
-            //Debug.log( $"<color=red> {move} </color>");
+            Debug.Log( $"<color=red>  {pieceThatMadeMove.name} to  {move} </color>");
         }
    
         private void ValidationResult( bool canMove)
@@ -132,17 +133,12 @@ public class ChessManager :MonoBehaviour
                 Debug.Log("<color=yellow> Already returning</color>");
                 return;
             }
-            
-            Debug.Log("<color=blue>Now we can set the performFinalMove</color>");
-
             SetCapturePiece(null);
             GameObject p = pieceThatMadeMove;
             GameObject newSquare = squareThatPieceMovedTo;
             // IF MOVE IS NOT CORRECT , SNAP IT BACK TO OLD POSITION AND JUST RETURN
             //CONFIRMATION THAT THE MOVE IS SUCCESSFUL
-
-
-
+            
             ChessPiece currentP = p.GetComponent<ChessPiece>();
             
             //Setting previous square
@@ -161,9 +157,7 @@ public class ChessManager :MonoBehaviour
             currentP.SetCurrentPosition(newSquare.gameObject.name);
             currentP.GetComponent<RectTransform>().anchoredPosition = newSquare.GetComponent<RectTransform>().anchoredPosition;
 
-         
             
-           
             trackMove.Add( new MoveTracker( currentP,currentP.previousSquare ,currentP.currentSquare));
             MoveMade();
          

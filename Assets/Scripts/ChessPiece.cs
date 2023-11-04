@@ -128,7 +128,7 @@ public class ChessPiece : MonoBehaviour , IBeginDragHandler , IEndDragHandler , 
         
         //CAPTURE MECHANIC PENDING
         var moveHistory = newPiece.GetComponent<ChessPiece>().GetCurrentPosition + "" + currentSquare.gameObject.name;
-        ChessManager.Instance.SendMoveMadeToEngine( newPiece.gameObject.name,moveHistory);
+        ChessManager.Instance.SendMoveMadeToEngine( newPiece.GetComponent<ChessPiece>().previousSquare.currentIndex ,this.currentSquare.currentIndex);
         ChessManager.Instance.SetNewPieceOnThis(newPiece ,currentSquare.gameObject);
        
     }

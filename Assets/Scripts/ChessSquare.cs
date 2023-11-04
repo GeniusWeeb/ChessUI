@@ -42,12 +42,11 @@ public class ChessSquare : MonoBehaviour, IDropHandler
                 return;
             
             string moveHistory = currentP.GetCurrentPosition+""+this.gameObject.name;
-            
             // Control should not return here again to this chess square once the move has been sent to validate
             //Control shifts completely to chess manager who will validate and confirm the move on UI.
             //LEARN : I MADE THE CONTROL MESSED UP TRYING TO PLUG THE RESULT IN HERE 
-            ConfirMoveMade(currentP.name, moveHistory);
-            //just send the data -> piece and the square object
+            ConfirMoveMade(currentP.currentSquare.currentIndex, currentIndex);
+          //send only index since the game doesnt care abt algebric notation and stuff
             ChessManager.Instance. SetNewPieceOnThis(eventData.pointerDrag , this.gameObject);
             
         }
@@ -59,9 +58,10 @@ public class ChessSquare : MonoBehaviour, IDropHandler
         defaultColor = color;
     }
 
-    private void  ConfirMoveMade(string name , string moveSquare)
+    private void  ConfirMoveMade(int myIndex , int  targetIndex)
     {
-        ChessManager.Instance.SendMoveMadeToEngine(name ,moveSquare);
+        
+        ChessManager.Instance.SendMoveMadeToEngine(myIndex ,targetIndex);
      
     }
 
