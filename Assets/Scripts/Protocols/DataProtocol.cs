@@ -31,7 +31,8 @@
      GAMEEND, 
      VALIDATE ,//RECEIVED ,
      INDICATE, //RECEIVED //SENT
-     UPDATEUI , // RECEIVED
+     UPDATEUI ,// RECEIVED
+     UNDO
  }
 
 

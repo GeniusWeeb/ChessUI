@@ -286,8 +286,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7c81ceb63c04801850961b31a00f130, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGameMode: 1
-  myPieceColour: 32
+  currentGameMode: 0
+  myPieceColour: 16
   trackMove: []
   config: {fileID: 11400000, guid: 0da1d49bbef9c45a38366476ba9086fe, type: 2}
   parentTransform: {fileID: 765684144}
@@ -679,7 +679,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 279750930}
         m_TargetAssemblyTypeName: ChessManager, Assembly-CSharp
-        m_MethodName: UndoMove
+        m_MethodName: UndoMain
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1656,7 +1656,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 252.85803, y: -250.55414}
-  m_SizeDelta: {x: 73.4142, y: 58.0132}
+  m_SizeDelta: {x: 100, y: 58.0132}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1331920021
 MonoBehaviour:
@@ -1678,7 +1678,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: xx
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e36b4bb3c98b1430a9c9eb7996887416, type: 2}
   m_sharedMaterial: {fileID: -1345224725818621746, guid: e36b4bb3c98b1430a9c9eb7996887416, type: 2}

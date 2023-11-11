@@ -158,7 +158,7 @@ public class ChessManager :MonoBehaviour
             currentP.GetComponent<RectTransform>().anchoredPosition = newSquare.GetComponent<RectTransform>().anchoredPosition;
 
             
-            trackMove.Add( new MoveTracker( currentP,currentP.previousSquare ,currentP.currentSquare));
+          
             MoveMade();
          
 
@@ -177,33 +177,15 @@ public class ChessManager :MonoBehaviour
 
 
         //ui interaction
-        public void UndoMove()
-        {
-            #region UI BASED UNDO -> SEND THE BOARD STATE TO THE ENGINE
-                    if (trackMove.Count == 0) //Empty array return
-                        return;
-                    //Most recent move , right now we are only doing  1 move at a time.
-                    //next step -> based on length, we need to undo 2 moves, 1 black and 1 white
-                    var moveData = trackMove[^1];
-                    moveData.piece.currentSquare = moveData.from;
-                    moveData.piece.previousSquare = moveData.to; // Note : can be changed to previous square instead of 2
+     
 
-                    moveData.piece.GetComponent<RectTransform>().anchoredPosition =
-                        moveData.piece.currentSquare.GetComponent<RectTransform>().anchoredPosition;
-                    moveData.piece.SetCurrentPosition(moveData.from.gameObject.name);
-                    moveData.piece.SetOldPosition(moveData.to.gameObject.name);
-                    moveData.piece.currentRectTransform = moveData.piece.GetComponent<RectTransform>().anchoredPosition;
-                    moveData.piece.oldRectTransform = moveData.to.GetComponent<RectTransform>().anchoredPosition;
-                    
-                    trackMove.RemoveAt(trackMove.Count-1);
-                    
-                    SetNewPieceOnThis(trackMove[^1].piece.gameObject ,trackMove[^1].to.gameObject );
-            #endregion    
-            
-            //Calculate board state and send to engine -> good for responsiveness
+        public void UndoMain()
+        {
+            DataProtocol undoMove = new DataProtocol(ProtocolTypes.UNDO.ToString(), null, null);
+            Connection.Instance.SendMessage(undoMove);
+
         }
-        
-        
+
         //ALLOW MOVEMENT
 
         private void ChangesUIBasedOnTurn()
