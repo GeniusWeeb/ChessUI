@@ -224,7 +224,9 @@ public class ChessManager :MonoBehaviour
         {
             int fromIndex = FromToIndexData[0];
             int toIndex = FromToIndexData[1];
-         
+            
+            Debug.LogError("Count of data is => " + FromToIndexData.Count);
+            
             GameObject fromObject =null, toObject =null;
 
             foreach (Transform item in chessBoardHolder)
@@ -250,8 +252,31 @@ public class ChessManager :MonoBehaviour
             CheckIfPieceCapturedUI(toObject);
             SetNewPieceOnThis(from.currentP.gameObject, toObject);
             PerformMoveFinal();
+            if (FromToIndexData.Count == 3)
+                PerformVisualForCapturedPiece(FromToIndexData[2],fromObject);
+            
         }
 
+        private void PerformVisualForCapturedPiece(int pCode , GameObject CapturedPiecePos )
+        {
+            //if not en passant , then 
+            foreach (Transform piece in parentTransform )
+            {
+                if(piece.gameObject.activeInHierarchy)
+                    continue;
+                ChessPiece capPieceToShow = piece.GetComponent<ChessPiece>();
+                ChessSquare oldSquareForCapPiece = CapturedPiecePos.GetComponent<ChessSquare>();
+                if (capPieceToShow.pCode == pCode && capPieceToShow.currentSquare == oldSquareForCapPiece)
+                {
+                    oldSquareForCapPiece.currentP = capPieceToShow;
+                    piece.gameObject.SetActive(true);
+                   
+
+                }
+
+            }
+            
+        }
 
         private void CheckIfPieceCapturedUI(GameObject toSquare)
         {
