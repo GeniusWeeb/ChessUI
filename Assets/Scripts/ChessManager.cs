@@ -252,8 +252,9 @@ public class ChessManager :MonoBehaviour
             CheckIfPieceCapturedUI(toObject);
             SetNewPieceOnThis(from.currentP.gameObject, toObject);
             PerformMoveFinal();
-            if (FromToIndexData.Count == 3)
+            if (FromToIndexData.Count == 3) //Usual capture movement
                 PerformVisualForCapturedPiece(FromToIndexData[2],fromObject);
+            
             
         }
 
@@ -292,6 +293,7 @@ public class ChessManager :MonoBehaviour
 
         public void SetUpGame()
         {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
             var dataToSend = currentGameMode + "-" + (int)myPieceColour;
             DataProtocol finalData = new DataProtocol(ProtocolTypes.GAMEMODE.ToString(),dataToSend,null);
             if (!isConsoleReady && currentGameMode == GameMode.None ) return;
