@@ -221,7 +221,12 @@ public class ChessManager :MonoBehaviour
 
         
         private void UpdateUIFromEngine(List<int> FromToIndexData)
-        {
+        {   
+            //move to a different function
+
+            if (IsEnPassant(FromToIndexData))
+                return;
+
             int fromIndex = FromToIndexData[0];
             int toIndex = FromToIndexData[1];
             
@@ -254,8 +259,32 @@ public class ChessManager :MonoBehaviour
             PerformMoveFinal();
             if (FromToIndexData.Count == 3) //Usual capture movement
                 PerformVisualForCapturedPiece(FromToIndexData[2],fromObject);
+            if (FromToIndexData.Count == 4) //Usual capture movement
+                PerformEnPassantUndo(FromToIndexData[2] , FromToIndexData[3]);
             
             
+        }
+
+        
+
+        private bool IsEnPassant(List<int> FromToIndexData)
+        {
+            if (FromToIndexData.Count == 1) //EnPassant
+            {
+                foreach (Transform sq in chessBoardHolder)
+                {
+                    var square = sq.GetComponent<ChessSquare>();
+                    if (square.currentIndex == FromToIndexData[0])
+                    {
+                        square.currentP.gameObject.SetActive(false);
+                        square.currentP = null;
+                        return true;
+                    }
+                }
+               
+            }
+
+            return false;
         }
 
         private void PerformVisualForCapturedPiece(int pCode , GameObject CapturedPiecePos )
@@ -278,6 +307,25 @@ public class ChessManager :MonoBehaviour
             }
             
         }
+        private void PerformEnPassantUndo(int pCode , int squareIndex  )
+        {
+            Debug.LogError("Performing EnPassant Undo");
+            //if not en passant , then 
+            foreach (Transform piece in parentTransform )
+            {
+                if(piece.gameObject.activeInHierarchy)
+                    continue;
+                ChessPiece capPieceToShow = piece.GetComponent<ChessPiece>();
+                if (capPieceToShow.currentSquare.currentIndex == squareIndex && pCode == capPieceToShow.pCode)
+                {
+                    capPieceToShow.currentSquare.currentP = capPieceToShow;
+                    capPieceToShow.gameObject.SetActive(true);
+                }
+
+            }
+            
+        }
+
 
         private void CheckIfPieceCapturedUI(GameObject toSquare)
         {
