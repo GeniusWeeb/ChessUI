@@ -251,7 +251,9 @@ public class ChessManager :MonoBehaviour
             }
             var from = fromObject.gameObject.GetComponent<ChessSquare>();
             if (from.currentP == null) {
+                Debug.LogError($"<color=yellow>{from.currentIndex}</color>");
                 Debug.Log($"<color=yellow> From  index {fromIndex} P is null</color>");
+               
                 return;
             }
             CheckIfPieceCapturedUI(toObject);
@@ -532,6 +534,7 @@ public enum GameMode
     PlayerVsPlayer ,
     PlayerVsBot ,
     BotVsBot,
+    PerfTest,
     None
 }
 
